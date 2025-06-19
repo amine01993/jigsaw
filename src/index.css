@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+html,
+body {
+    font-family: "Fredoka", sans-serif;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
