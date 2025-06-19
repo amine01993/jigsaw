@@ -217,20 +217,10 @@ const PuzzleItem: React.FC<{
                     x.get(),
                     y.get()
                 );
-                // controls.start({
-                //     x: 0,
-                //     y: 0,
-                // });
-                // animate(x, 0);
-                // animate(y, 0);
             }
 
-            animate(x, 0, {
-                duration: 2,
-            });
-            animate(y, 0, {
-                duration: 2,
-            });
+            animate(x, 0);
+            animate(y, 0);
 
             // console.log(`Piece dropped at (${column}, ${row})`);
         }

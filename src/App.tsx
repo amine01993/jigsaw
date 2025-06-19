@@ -74,7 +74,7 @@ function App() {
             }}
         >
             <MotionConfig
-                transition={{ duration: 2, type: "tween", ease: "easeInOut" }}
+                transition={{ duration: .2, type: "tween", ease: "easeInOut" }}
             >
                 <Game />
             </MotionConfig>
