@@ -1,261 +1,155 @@
-import { useCallback, useRef, type RefObject } from "react";
-import { motion, animate, useAnimation, useMotionValue } from "motion/react";
+import {
+    useEffect,
+    useMemo,
+} from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { useGame } from "../contexts/game";
+import { getCoordsFromIndex, isInsideTheGrid } from "@/helpers/helper";
+import { useSortable } from "@dnd-kit/sortable";
+import classNames from "classnames";
 
 export interface PuzzlePiece {
     id: number;
     imageUrl: string;
     position: { x: number; y: number } | null;
     correctPosition: { x: number; y: number };
-    // placed: boolean;
     outsidePosition: { x: number; y: number };
     isPlaceholder: boolean;
 }
 
 const PuzzleItem: React.FC<{
     piece: PuzzlePiece | null;
-    row: number;
-    col: number;
-    container: RefObject<HTMLDivElement | null>;
+    index: number;
     itemSize: number;
-}> = ({ piece, row: oldRow, col: oldCol, container, itemSize }) => {
-    const ref = useRef<HTMLImageElement>(null);
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    // const controls = useAnimation();
+}> = ({ piece, index, itemSize }) => {
     const {
-        offset,
-        puzzleGridCols,
-        puzzleGridRows,
-        puzzlePieces,
-        setPuzzlePieces,
-        puzzleGrid,
-        setPuzzleGrid,
-    } = useGame();
-
-    const isInsideTheGrid = useCallback(
-        (col: number, row: number) => {
-            return (
-                col >= offset.left &&
-                col < puzzleGridCols + offset.left &&
-                row >= offset.top &&
-                row < puzzleGridRows + offset.top
-            );
+        attributes,
+        listeners,
+        transform,
+        transition,
+        isDragging,
+        isSorting,
+        over,
+        setNodeRef,
+    } = useSortable({
+        id: piece ? piece.id.toString() : `empty-${index}`,
+        disabled: !piece,
+        animateLayoutChanges: ({ isSorting, wasDragging }) => {
+            return isSorting || wasDragging;
         },
-        [puzzleGridCols, puzzleGridRows, offset]
-    );
+    });
+    const { puzzleDims, gridPadding, gridDims } = useGame();
 
-    const handleDrop = useCallback(() => {
-        if (ref.current && container.current && piece) {
-            const rect = ref.current.getBoundingClientRect();
-            const cRect = container.current.getBoundingClientRect();
+    const oldCoords = useMemo(() => {
+        const coords = getCoordsFromIndex(index, gridDims.cols);
+        return coords;
+    }, [index, gridDims]);
 
-            const adjustedParentTop =
-                cRect.top + ((offset.top - offset.bottom) / 2) * itemSize;
-            const adjustedParentLeft =
-                cRect.left + ((offset.right - offset.left) / 2) * itemSize;
+    const isInTheGrid = useMemo(() => {
+        return isInsideTheGrid(
+            oldCoords.x,
+            oldCoords.y,
+            gridPadding,
+            puzzleDims
+        );
+    }, [oldCoords, gridPadding, puzzleDims]);
 
-            const dy = Math.round(rect.top - adjustedParentTop);
-            const dx = Math.round(rect.left - adjustedParentLeft);
-            // console.log(`New position: (${rect.top}, ${rect.left})`);
-            // console.log(`Container position: (${cRect.top}, ${cRect.left})`);
-            // console.log(`Adjusted Parent position: (${adjustedParentTop}, ${adjustedParentLeft})`);
-            // console.log(`Difference: (${dy}, ${dx})`, x.get(), y.get());
+    // useEffect(() => {
+    //     if (index === -1) {
+    //         console.log("isDragging", isDragging, piece?.id, index);
+    //     }
+    // }, [isDragging]);
 
-            // Calculate drop position
-            const column = Math.round(dx / ref.current.width);
-            const row = Math.round(dy / ref.current.height);
+    // useEffect(() => {
+    //     console.log("isSorting", isSorting, piece?.id, index);
+    // }, [isSorting]);
 
-            // ref.current.style.removeProperty("transform");
-            // x.set(0);
-            // y.set(0);
-
-            // if comes from outside the grid and dropped inside it
-            if (
-                !isInsideTheGrid(oldCol, oldRow) &&
-                isInsideTheGrid(column, row)
-            ) {
-                console.log("outside to inside drop");
-                console.log(
-                    `Piece dropped at (${column}, ${row}) inside the grid`,
-                    `Old position: (${oldCol}, ${oldRow})`,
-                    x.get(),
-                    y.get()
-                );
-                setPuzzleGrid((grid: (PuzzlePiece | null)[][]) => {
-                    const newGrid: (PuzzlePiece | null)[][] = grid.map((r) =>
-                        r.map((p) => (p ? { ...p } : null))
-                    );
-
-                    console.log(`New grid after drop:`, newGrid[row][column]);
-
-                    if (newGrid[row][column]) {
-                        // If the cell is occupied, we need to handle the existing piece
-                        const existingPiece = newGrid[row][column];
-
-                        // If the dropped piece comes from outside the grid, then the existing piece should be moved to its original position
-                        console.log(
-                            `Moving existing piece ${existingPiece.id} to outside position`,
-                            oldRow,
-                            oldCol,
-                            existingPiece.outsidePosition
-                        );
-                        newGrid[existingPiece.outsidePosition.y + offset.top][
-                            existingPiece.outsidePosition.x + offset.left
-                        ] = {
-                            ...existingPiece,
-                            position: null,
-                        };
-
-                        newGrid[oldRow][oldCol] = null;
-
-                        // Place the new piece in the desired position
-                        newGrid[row][column] = {
-                            ...piece,
-                            position: {
-                                x: column - offset.left,
-                                y: row - offset.top,
-                            },
-                        };
-                    } else {
-                        // If the cell is empty, simply place the new piece
-                        console.log(
-                            `Placing new piece ${piece.id} at (${column}, ${row})`
-                        );
-                        newGrid[oldRow][oldCol] = null;
-
-                        newGrid[row][column] = {
-                            ...piece,
-                            position: {
-                                x: column - offset.left,
-                                y: row - offset.top,
-                            },
-                        };
-                    }
-
-                    return newGrid;
-                });
-            } else if (
-                isInsideTheGrid(oldCol, oldRow) &&
-                isInsideTheGrid(column, row)
-            ) {
-                // if comes from inside the grid and dropped inside it
-                console.log("inside to inside drop");
-                console.log(
-                    `Piece dropped at (${column}, ${row}) inside the grid`,
-                    `Old position: (${oldCol}, ${oldRow})`,
-                    x.get(),
-                    y.get()
-                );
-                setPuzzleGrid((grid: (PuzzlePiece | null)[][]) => {
-                    const newGrid: (PuzzlePiece | null)[][] = grid.map((r) =>
-                        r.map((p) => (p ? { ...p } : null))
-                    );
-
-                    console.log(`New grid after drop:`, newGrid[row][column]);
-
-                    if (newGrid[row][column]) {
-                        // If the cell is occupied, we need to handle the existing piece
-                        const existingPiece = newGrid[row][column];
-
-                        // If the position didn't change, we don't need to do anything
-                        if (existingPiece.id === piece.id) {
-                            // controls.start({
-                            //     x: 0,
-                            //     y: 0,
-                            // });
-                            // animate(x, 0);
-                            // animate(y, 0);
-                            console.log(
-                                `Piece ${piece.id} already exists at (${column}, ${row}), no action needed`
-                            );
-                            return newGrid;
-                        }
-
-                        // If the dropped piece comes from inside the grid, then the pieces should be swapped
-                        console.log(
-                            `Swapping existing piece ${existingPiece.id} at (${oldCol}, ${oldRow}) with new piece ${piece.id} at (${column}, ${row})`
-                        );
-                        newGrid[oldRow][oldCol] = {
-                            ...existingPiece,
-                            position: {
-                                x: oldCol - offset.left,
-                                y: oldRow - offset.top,
-                            },
-                        };
-
-                        // Place the new piece in the desired position
-                        newGrid[row][column] = {
-                            ...piece,
-                            position: {
-                                x: column - offset.left,
-                                y: row - offset.top,
-                            },
-                        };
-                    } else {
-                        // If the cell is empty, simply place the new piece
-                        console.log(
-                            `Placing new piece ${piece.id} at (${column}, ${row})`
-                        );
-                        newGrid[oldRow][oldCol] = null;
-
-                        newGrid[row][column] = {
-                            ...piece,
-                            position: {
-                                x: column - offset.left,
-                                y: row - offset.top,
-                            },
-                        };
-                    }
-
-                    return newGrid;
-                });
-            } else {
-                // if comes from outside the grid and dropped outside of it
-                console.log(
-                    `Piece dropped at (${column}, ${row}) outside the grid`,
-                    x.get(),
-                    y.get()
-                );
-            }
-
-            animate(x, 0);
-            animate(y, 0);
-
-            // console.log(`Piece dropped at (${column}, ${row})`);
+    useEffect(() => {
+        if (over) {
+            console.log("piece", piece?.id, "over", over?.id, index);
         }
-    }, [
-        x,
-        y,
-        offset,
-        itemSize,
-        puzzlePieces,
-        isInsideTheGrid,
-        oldRow,
-        oldCol,
-        setPuzzleGrid,
-        piece,
-    ]);
+    }, [over, piece]);
 
     return (
         <>
-            {piece && (
-                <motion.img
-                    ref={ref}
-                    drag
-                    dragMomentum={false}
-                    dragConstraints={container}
-                    dragElastic={0}
-                    className="object-cover"
-                    src={piece.imageUrl}
-                    alt={`Piece Number (${oldCol}, ${oldRow})`}
-                    style={{ x, y }}
-                    // animate={controls}
-                    onDragEnd={handleDrop}
-                    layoutId={`piece-${piece.id}`}
+            {piece && index > -1 && (
+                <div className="relative">
+                    <motion.img
+                        ref={setNodeRef}
+                        className={classNames("object-cover", {
+                            "opacity-50": isDragging,
+                            "ring ring-fuchsia-600/50": !isInTheGrid,
+                        })}
+                        src={piece.imageUrl}
+                        alt={`Piece Number (${oldCoords.x}, ${oldCoords.y})`}
+                        {...listeners}
+                        {...attributes}
+                        style={{
+                            width: itemSize,
+                            height: itemSize,
+                            transform: isSorting
+                                ? undefined
+                                : `translate3d(${transform?.x || 0}px, ${
+                                      transform?.y || 0
+                                  }px, 0)`,
+                            transition,
+                        }}
+                    />
+                    <AnimatePresence>
+                        {String(piece.id) === String(over?.id) && (
+                            <motion.div
+                                initial={{ backgroundColor: "#00996600" }}
+                                animate={{backgroundColor: "#00996640" }}
+                                exit={{ backgroundColor: "#00996600" }}
+                                className="absolute inset-0 mix-blend-normal"
+                                // transition={{ duration: 2 }}
+                            />
+                        )}
+                    </AnimatePresence>
+                </div>
+            )}
+            <AnimatePresence>
+                {piece && index === -1 && (
+                    <motion.img
+                        initial={{ boxShadow: "none" }}
+                        animate={{
+                            boxShadow:
+                                ".0rem .4rem .4rem #f4a8ff50," +
+                                ".0rem -.4rem .4rem #f4a8ff50," +
+                                ".4rem 0rem .4rem #f4a8ff50," +
+                                "-.4rem 0rem .4rem #f4a8ff50",
+                        }}
+                        exit={{ boxShadow: "none" }}
+                        // transition={{ duration: 0.3 }}
+                        ref={setNodeRef}
+                        className={classNames("object-cover", {})}
+                        src={piece.imageUrl}
+                        alt="Drag overlay"
+                        style={{
+                            width: itemSize,
+                            height: itemSize,
+                        }}
+                    />
+                )}
+            </AnimatePresence>
+            {!piece && (
+                <div
+                    ref={setNodeRef}
+                    aria-label="Empty piece"
+                    {...listeners}
+                    {...attributes}
+                    style={{ width: itemSize, height: itemSize }}
+                    className={classNames(
+                        "backdrop-blur-md transition-colors duration-300",
+                        {
+                            "bg-white/10":
+                                isInTheGrid && `empty-${index}` !== over?.id,
+                            "bg-emerald-600/40": `empty-${index}` === over?.id,
+                        },
+                        "select-none"
+                    )}
                 />
             )}
-            {!piece && <div style={{ width: itemSize, height: itemSize }} />}
         </>
     );
 };
