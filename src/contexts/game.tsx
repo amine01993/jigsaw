@@ -1,7 +1,6 @@
 import { createContext, useContext, type Dispatch } from "react";
 import type { PuzzlePiece } from "../components/puzzle-item";
 
-export type DifficultyLevel = "easy" | "medium" | "hard";
 export type LocaleType = "en" | "fr";
 export type OffsetType = {
     top: number;
@@ -10,7 +9,6 @@ export type OffsetType = {
     right: number;
 };
 export type SettingType = {
-    difficulty: DifficultyLevel;
     locale: LocaleType;
     showTimer: boolean;
     showFps: boolean;
@@ -19,6 +17,10 @@ export type SettingType = {
 type GameContextType = {
     level: number;
     setLevel: Dispatch<React.SetStateAction<number>>;
+    puzzleItemsNumber: number;
+    setPuzzleItemsNumber: Dispatch<React.SetStateAction<number>>;
+    openPuzzleItemsOptions: boolean;
+    setOpenPuzzleItemsOptions: Dispatch<React.SetStateAction<boolean>>;
     settings: SettingType;
     setSettings: Dispatch<React.SetStateAction<SettingType>>;
     openSettings: boolean;
@@ -38,6 +40,8 @@ type GameContextType = {
     puzzleDims: { cols: number; rows: number };
     gridPadding: { x: number; y: number };
     gridDims: { cols: number; rows: number };
+    isGameComplete: boolean;
+    handleNextLevel: () => void;
 };
 
 export const GameContext = createContext<GameContextType | undefined>(

@@ -1,12 +1,9 @@
-import {
-    useEffect,
-    useMemo,
-} from "react";
+import { memo, useMemo } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { useGame } from "../contexts/game";
-import { getCoordsFromIndex, isInsideTheGrid } from "@/helpers/helper";
 import { useSortable } from "@dnd-kit/sortable";
 import classNames from "classnames";
+import { useGame } from "@/contexts/game";
+import { getCoordsFromIndex, isInsideTheGrid } from "@/helpers/helper";
 
 export interface PuzzlePiece {
     id: number;
@@ -21,7 +18,8 @@ const PuzzleItem: React.FC<{
     piece: PuzzlePiece | null;
     index: number;
     itemSize: number;
-}> = ({ piece, index, itemSize }) => {
+    disabled?: boolean;
+}> = ({ piece, index, itemSize, disabled }) => {
     const {
         attributes,
         listeners,
@@ -33,7 +31,7 @@ const PuzzleItem: React.FC<{
         setNodeRef,
     } = useSortable({
         id: piece ? piece.id.toString() : `empty-${index}`,
-        disabled: !piece,
+        disabled: !piece || disabled,
         animateLayoutChanges: ({ isSorting, wasDragging }) => {
             return isSorting || wasDragging;
         },
@@ -54,32 +52,23 @@ const PuzzleItem: React.FC<{
         );
     }, [oldCoords, gridPadding, puzzleDims]);
 
-    // useEffect(() => {
-    //     if (index === -1) {
-    //         console.log("isDragging", isDragging, piece?.id, index);
-    //     }
-    // }, [isDragging]);
-
-    // useEffect(() => {
-    //     console.log("isSorting", isSorting, piece?.id, index);
-    // }, [isSorting]);
-
-    useEffect(() => {
-        if (over) {
-            console.log("piece", piece?.id, "over", over?.id, index);
-        }
-    }, [over, piece]);
-
     return (
         <>
             {piece && index > -1 && (
                 <div className="relative">
                     <motion.img
                         ref={setNodeRef}
-                        className={classNames("object-cover", {
-                            "opacity-50": isDragging,
-                            "ring ring-fuchsia-600/50": !isInTheGrid,
-                        })}
+                        className={classNames(
+                            "puzzle-item",
+                            "object-cover",
+                            {
+                                "focus:outline-fuchsia-300 transition-all duration-300": !disabled,
+                            },
+                            {
+                                "opacity-50": isDragging,
+                                "ring ring-fuchsia-600/50": !isInTheGrid,
+                            }
+                        )}
                         src={piece.imageUrl}
                         alt={`Piece Number (${oldCoords.x}, ${oldCoords.y})`}
                         {...listeners}
@@ -90,7 +79,7 @@ const PuzzleItem: React.FC<{
                             transform: isSorting
                                 ? undefined
                                 : `translate3d(${transform?.x || 0}px, ${
-                                      transform?.y || 0
+                                      (transform?.y || 0)
                                   }px, 0)`,
                             transition,
                         }}
@@ -99,10 +88,9 @@ const PuzzleItem: React.FC<{
                         {String(piece.id) === String(over?.id) && (
                             <motion.div
                                 initial={{ backgroundColor: "#00996600" }}
-                                animate={{backgroundColor: "#00996640" }}
+                                animate={{ backgroundColor: "#00996640" }}
                                 exit={{ backgroundColor: "#00996600" }}
                                 className="absolute inset-0 mix-blend-normal"
-                                // transition={{ duration: 2 }}
                             />
                         )}
                     </AnimatePresence>
@@ -120,14 +108,14 @@ const PuzzleItem: React.FC<{
                                 "-.4rem 0rem .4rem #f4a8ff50",
                         }}
                         exit={{ boxShadow: "none" }}
-                        // transition={{ duration: 0.3 }}
                         ref={setNodeRef}
-                        className={classNames("object-cover", {})}
+                        className={"object-cover"}
                         src={piece.imageUrl}
                         alt="Drag overlay"
                         style={{
                             width: itemSize,
                             height: itemSize,
+                            touchAction: "manipulation",
                         }}
                     />
                 )}
@@ -148,10 +136,11 @@ const PuzzleItem: React.FC<{
                         },
                         "select-none"
                     )}
+                    tabIndex={-1}
                 />
             )}
         </>
     );
 };
 
-export default PuzzleItem;
+export default memo(PuzzleItem);

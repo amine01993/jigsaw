@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 import {
     GameContext,
-    type DifficultyLevel,
     type OffsetType,
     type SettingType,
 } from "./contexts/game";
@@ -10,13 +9,16 @@ import Game from "@/components/game";
 import type { PuzzlePiece } from "./components/puzzle-item";
 import { MotionConfig } from "motion/react";
 import { getGridDims, getGridPadding, getPuzzleDims } from "./helpers/helper";
+import ANIME_IMAGES from "./data/images.json";
 
 function App() {
     const [level, setLevel] = useState(1);
     const [started, setStarted] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
+    const [puzzleItemsNumber, setPuzzleItemsNumber] = useState<number>(9);
+    const [openPuzzleItemsOptions, setOpenPuzzleItemsOptions] =
+        useState<boolean>(false);
     const [settings, setSettings] = useState<SettingType>({
-        difficulty: "easy" as DifficultyLevel,
         locale: "en",
         showTimer: true,
         showFps: true,
@@ -35,8 +37,8 @@ function App() {
     });
 
     const puzzleDims = useMemo(() => {
-        return getPuzzleDims(settings.difficulty);
-    }, [settings.difficulty]);
+        return getPuzzleDims(puzzleItemsNumber);
+    }, [puzzleItemsNumber]);
 
     const gridPadding = useMemo(() => {
         return getGridPadding(offset);
@@ -45,6 +47,33 @@ function App() {
     const gridDims = useMemo(() => {
         return getGridDims(puzzleDims, gridPadding);
     }, [puzzleDims, gridPadding]);
+
+    const isGameComplete = useMemo(() => {
+        if (puzzlePieces.length > 0) {
+            console.log("isGameComplete puzzlePieces", puzzlePieces)
+            for (const piece of puzzlePieces) {
+                if (
+                    piece &&
+                    (!piece.position ||
+                        piece.correctPosition.x !== piece.position.x ||
+                        piece.correctPosition.y !== piece.position.y)
+                ) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }, [puzzlePieces]);
+
+    // Pass to the next level
+    const handleNextLevel = useCallback(() => {
+        console.log("handleNextLevel");
+        if (level + 1 < ANIME_IMAGES.length) {
+            setLevel(level + 1);
+            setGameInitialized(false);
+        }
+    }, [level]);
 
     useEffect(() => {
         if (openSettings) {
@@ -62,6 +91,10 @@ function App() {
                 value={{
                     level,
                     setLevel,
+                    puzzleItemsNumber,
+                    setPuzzleItemsNumber,
+                    openPuzzleItemsOptions,
+                    setOpenPuzzleItemsOptions,
                     settings,
                     setSettings,
                     openSettings,
@@ -81,6 +114,8 @@ function App() {
                     puzzleDims,
                     gridPadding,
                     gridDims,
+                    isGameComplete,
+                    handleNextLevel,
                 }}
             >
                 <MotionConfig

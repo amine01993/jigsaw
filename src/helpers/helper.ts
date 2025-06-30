@@ -1,5 +1,5 @@
 import type { PuzzlePiece } from "@/components/puzzle-item";
-import type { DifficultyLevel, OffsetType } from "@/contexts/game";
+import type { OffsetType } from "@/contexts/game";
 
 export function getOffsetAndOutsidePositions(rows: number, cols: number) {
     const positions: { x: number; y: number }[] = [];
@@ -96,15 +96,12 @@ export function getOffsetAndOutsidePositions(rows: number, cols: number) {
     };
 }
 
-export function getPuzzleDims(difficulty: DifficultyLevel) {
-    switch (difficulty) {
-        case "medium":
-            return { cols: 5, rows: 5 };
-        case "hard":
-            return { cols: 7, rows: 7 };
-        default:
-            return { cols: 3, rows: 3 };
+export function getPuzzleDims(puzzleItemsNumber: number) {
+    const dim = Math.floor(Math.sqrt(puzzleItemsNumber));
+    if (dim * dim !== puzzleItemsNumber) {
+        throw new Error("Invalid puzzle item number");
     }
+    return { cols: dim, rows: dim };
 }
 
 export function getGridPadding(offset: OffsetType) {
@@ -183,7 +180,7 @@ export function getDurationFromSeconds(seconds: number): string {
     const secs = seconds % 60;
 
     return [
-        hours > 0 ? String(hours).padStart(2, "0") : null,
+        String(hours).padStart(2, "0"),
         String(minutes).padStart(2, "0"),
         String(secs).padStart(2, "0"),
     ]

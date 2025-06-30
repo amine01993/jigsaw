@@ -38,7 +38,7 @@ const Loading = ({ text }: LoadingProps) => {
                         initial={{ opacity: 0, x: -40 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 40 }}
-                        className="text-[#ff5500]"
+                        className="text-[#b33b00]"
                     >
                         {text}
                     </motion.p>

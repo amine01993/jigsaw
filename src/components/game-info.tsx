@@ -4,9 +4,9 @@ import { memo, useEffect, useMemo, useState } from "react";
 import GameFPS from "./game-fps";
 
 const GameInfo = () => {
-    console.log("GameInfo rendered");
+    // console.log("GameInfo rendered");
 
-    const { level, settings, started, isPaused } = useGame();
+    const { settings, started, isPaused } = useGame();
     const [playTime, setPlayTime] = useState(0);
 
     const playTimeDisplay = useMemo(() => {
@@ -31,10 +31,8 @@ const GameInfo = () => {
     }, [isPaused, started, playTime]);
 
     return (
-        <div className="flex items-center gap-10">
-            <p className="text-md">Level: {level + 1}</p>
-            <p className="text-md">Difficulty: {settings.difficulty}</p>
-            {settings.showTimer && <p className="text-md">Time: {playTimeDisplay}</p>}
+        <div className="flex items-center text-[#FFD6C1] absolute top-1/2 left-1/3 -translate-y-1/2 -translate-x-1/3 w-[200px]">
+            {settings.showTimer && <p className="text-md w-[90px]" aria-label="Play time">{playTimeDisplay}</p>}
             {settings.showFps && <GameFPS />}
         </div>
     );
