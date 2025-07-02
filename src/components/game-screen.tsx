@@ -1,4 +1,5 @@
 import {
+    Fragment,
     memo,
     useCallback,
     useEffect,
@@ -8,6 +9,7 @@ import {
     type KeyboardEvent,
 } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { useTranslation } from "react-i18next";
 import {
     DndContext,
     DragOverlay,
@@ -42,21 +44,22 @@ import {
 import PuzzleItem, { type PuzzlePiece } from "@/components/puzzle-item";
 import { useGame } from "@/contexts/game";
 import Loading from "@/components/loading";
-import { useTranslation } from "react-i18next";
+import PuzzleItemOverlay from "@/components/puzzle-item-overlay";
+import PuzzleItemEmpty from "@/components/puzzle-item-empty";
 
 const GameScreen = () => {
-    console.log("GameScreen rendered");
     const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const resizeTimeout = useRef<NodeJS.Timeout | null>(null);
+    const dropSound = useRef<HTMLAudioElement | null>(null);
     const {
         isLoading,
         gameInitialized,
         level,
         puzzleItemsNumber,
         puzzlePieces,
-        started,
+        settings,
         setPuzzlePieces,
         setGameInitialized,
         setIsLoading,
@@ -111,7 +114,6 @@ const GameScreen = () => {
 
     const restrictToPuzzleGrid = useCallback<Modifier>(
         ({ transform, activatorEvent, draggingNodeRect }) => {
-            // console.log("draggingNodeRect", draggingNodeRect);
             if (!containerRef.current || !draggingNodeRect) return transform;
 
             const containerRect = containerRef.current.getBoundingClientRect();
@@ -123,7 +125,7 @@ const GameScreen = () => {
 
             const isTouchSorting = isTouchEvent(activatorEvent);
 
-            // Get proposed new position
+            // Get proposed new position + on touch screens the puzzle item should slightly higher for visibility
             const proposedLeft = draggingNodeRect.left + transform.x;
             const proposedTop =
                 draggingNodeRect.top +
@@ -149,24 +151,18 @@ const GameScreen = () => {
 
     const handleDragStart = useCallback(
         (event: DragStartEvent) => {
-            console.log("Drag started", event);
             setActiveId(String(event.active.id));
 
             setStarted(true);
-            if (!started) {
-                console.log("Game started");
-            }
         },
-        [started]
+        []
     );
 
     const handleDragEnd = useCallback(
         (event: DragEndEvent) => {
-            console.log("Drag ended");
             const { active, over } = event;
 
             if (!over) {
-                console.log("No drop target, cancelling drag");
                 setActiveId("");
                 return;
             }
@@ -197,8 +193,6 @@ const GameScreen = () => {
                 )
             ) {
                 // if comes from outside the grid and dropped inside it
-                console.log("outside to inside drop");
-
                 setPuzzlePieces((pieces: (PuzzlePiece | null)[]) => {
                     const newPieces = clonePieces(pieces);
                     const piece = newPieces[activeIndex]!;
@@ -208,11 +202,6 @@ const GameScreen = () => {
                         const existingPiece = newPieces[overIndex];
 
                         // If the dropped piece comes from outside the grid, then the existing piece should be moved to its original position
-                        console.log(
-                            `Moving existing piece ${existingPiece.id} to outside position`,
-                            existingPiece.outsidePosition
-                        );
-
                         const newOverIndex = getIndexFromCoords(
                             existingPiece.outsidePosition.x + gridPadding.x,
                             existingPiece.outsidePosition.y + gridPadding.y,
@@ -236,9 +225,6 @@ const GameScreen = () => {
                         };
                     } else {
                         // If the cell is empty, simply place the new piece
-                        console.log(
-                            `Placing new piece ${piece.id} at (${overCoords.x}, ${overCoords.y})`
-                        );
                         newPieces[activeIndex] = null;
 
                         newPieces[overIndex] = {
@@ -267,8 +253,6 @@ const GameScreen = () => {
                 )
             ) {
                 // if comes from inside the grid and dropped inside it
-                console.log("inside to inside drop");
-
                 setPuzzlePieces((pieces: (PuzzlePiece | null)[]) => {
                     const newPieces = clonePieces(pieces);
                     const piece = newPieces[activeIndex]!;
@@ -279,7 +263,6 @@ const GameScreen = () => {
 
                         // If the position didn't change, we don't need to do anything
                         if (existingPiece.id === piece.id) {
-                            console.log(`Same piece, no action needed`);
                             return newPieces;
                         }
 
@@ -302,9 +285,6 @@ const GameScreen = () => {
                         };
                     } else {
                         // If the cell is empty, simply place the new piece
-                        console.log(
-                            `Placing new piece ${piece.id} at (${overCoords.x}, ${overCoords.y})`
-                        );
                         newPieces[activeIndex] = null;
 
                         // Place the new piece in the desired position
@@ -334,7 +314,6 @@ const GameScreen = () => {
                 )
             ) {
                 // if comes from inside the grid and dropped outside of it
-                console.log("inside to outside drop");
                 setPuzzlePieces((pieces: (PuzzlePiece | null)[]) => {
                     const newPieces = clonePieces(pieces);
                     const piece = newPieces[activeIndex]!;
@@ -357,16 +336,16 @@ const GameScreen = () => {
                 });
             } else {
                 // if comes from outside the grid and dropped outside of it
-                console.log(
-                    `Piece dropped at (${overCoords.x}, ${overCoords.y}) outside the grid`
-                );
+            }
+
+            if (dropSound.current && settings.playSound) {
+                dropSound.current.play();
             }
         },
-        [puzzlePieces, gridDims, gridPadding, puzzleDims]
+        [puzzlePieces, gridDims, gridPadding, puzzleDims, settings.playSound]
     );
 
     const handleDragCancel = useCallback(() => {
-        console.log("Drag cancelled");
     }, []);
 
     const handleGridKeyDown = useCallback(
@@ -426,25 +405,9 @@ const GameScreen = () => {
                 _puzzleDims.rows,
                 _puzzleDims.cols
             );
-            console.log("Puzzle size:", puzzleItemsNumber);
-            console.log(
-                `Puzzle dimensions: rows=${_puzzleDims.rows}, cols=${_puzzleDims.cols}`,
-                data
-            );
+            
             const _gridPadding = getGridPadding(data.offset);
             const _gridDims = getGridDims(_puzzleDims, _gridPadding);
-            console.log(
-                `Grid dimensions: rows=${_gridDims.rows}, cols=${_gridDims.cols}`,
-                _gridPadding
-            );
-
-            const gameSize = Math.min(
-                window.innerWidth,
-                window.innerHeight - 48
-            );
-            const maxItemSize = 140;
-            gridSize.current = Math.min(gameSize, maxItemSize * _gridDims.cols);
-            console.log(`Grid size: ${gridSize.current}px`);
 
             if (canvasRef.current) {
                 const ctx = canvasRef.current.getContext("2d");
@@ -453,9 +416,6 @@ const GameScreen = () => {
                     const w = image.width / _gridDims.cols;
                     const h = image.height / _gridDims.rows;
                     const pieceSize = Math.min(w, h);
-                    console.log(
-                        `Piece dimensions: width=${w}, height=${h}, size=${pieceSize}`
-                    );
 
                     canvasRef.current.width = pieceSize;
                     canvasRef.current.height = pieceSize;
@@ -517,7 +477,6 @@ const GameScreen = () => {
             setOffset(data.offset);
             setPuzzlePieces(gamePieces);
             setGameInitialized(true);
-            setResizing(false);
         };
 
         image.onerror = () => {
@@ -525,8 +484,24 @@ const GameScreen = () => {
         };
     }, [level, puzzleItemsNumber]);
 
+    const updateItemSize = useCallback(() => {
+        if (!isLoading && gameInitialized) {
+            const gameSize = Math.min(
+                window.innerWidth,
+                window.innerHeight - 48
+            );
+            const maxItemSize = 140;
+            gridSize.current = Math.min(gameSize, maxItemSize * gridDims.cols);
+
+            const w = gridSize.current / gridDims.cols;
+            const h = gridSize.current / gridDims.rows;
+            const _itemSize = Math.min(w, h);
+            setItemSize(_itemSize);
+            setResizing(false);
+        }
+    }, [gameInitialized, isLoading, gridDims]);
+
     const handleWindowResize = useCallback(() => {
-        console.log("Window resized");
         setResizing(true);
 
         if (resizeTimeout.current) {
@@ -534,24 +509,14 @@ const GameScreen = () => {
         }
 
         resizeTimeout.current = setTimeout(() => {
-            // setResizing(false);
-            console.log("Generating puzzle after resize");
-            generatePuzzle();
+            updateItemSize();
             resizeTimeout.current = null;
         }, 300);
-    }, [generatePuzzle]);
+    }, [updateItemSize]);
 
     useEffect(() => {
-        if (!isLoading && gameInitialized) {
-            const w = gridSize.current / gridDims.cols;
-            const h = gridSize.current / gridDims.rows;
-            const _itemSize = Math.min(w, h);
-            setItemSize(_itemSize);
-            console.log(
-                `Grid Item dimensions: width=${w}, height=${h}, size=${_itemSize}, gridSize=${gridSize.current}`
-            );
-        }
-    }, [isLoading, gameInitialized, gridDims]);
+        updateItemSize();
+    }, [updateItemSize]);
 
     // Initialize game on component mount
     useEffect(() => {
@@ -568,7 +533,6 @@ const GameScreen = () => {
     }, [handleWindowResize]);
 
     useEffect(() => {
-        console.log("level", level);
         generatePuzzle();
     }, [generatePuzzle]);
 
@@ -596,7 +560,6 @@ const GameScreen = () => {
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
                     onDragCancel={handleDragCancel}
-                    // onDragMove={() => console.log("Dragging...")}
                     sensors={sensors}
                     collisionDetection={rectIntersection}
                     measuring={measuringStrategy.current}
@@ -620,13 +583,22 @@ const GameScreen = () => {
                             {puzzlePieces.length > 0 &&
                                 puzzlePieces.map((piece, index) => {
                                     return (
-                                        <PuzzleItem
-                                            key={piece?.id ?? `piece-${index}`}
-                                            index={index}
-                                            piece={piece}
-                                            itemSize={itemSize}
-                                            disabled={isGameComplete}
-                                        />
+                                        <Fragment key={piece?.id ?? `piece-${index}`}>
+                                            {piece && (
+                                                <PuzzleItem
+                                                    index={index}
+                                                    piece={piece}
+                                                    itemSize={itemSize}
+                                                    disabled={isGameComplete}
+                                                />
+                                            )}
+                                            {!piece && (
+                                                <PuzzleItemEmpty
+                                                    index={index}
+                                                    itemSize={itemSize}
+                                                />
+                                            )}
+                                        </Fragment>
                                     );
                                 })}
                             <AnimatePresence>
@@ -717,17 +689,16 @@ const GameScreen = () => {
                     </SortableContext>
 
                     <DragOverlay>
-                        {activeId ? (
-                            <PuzzleItem
-                                piece={activePiece}
-                                index={-1}
-                                itemSize={itemSize}
-                            />
-                        ) : null}
+                        <AnimatePresence>
+                            {activePiece && (
+                                <PuzzleItemOverlay piece={activePiece} itemSize={itemSize} />
+                            )}
+                        </AnimatePresence>
                     </DragOverlay>
                 </DndContext>
             )}
             <canvas ref={canvasRef} className="hidden"></canvas>
+            <audio ref={dropSound} preload="auto" src="/audios/card-place-1.ogg" />
         </>
     );
 };

@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import * as motion from "motion/react-client";
+import { motion } from "motion/react";
 import { memo, useCallback, useState } from "react";
 
 interface InputSwitchProps {
@@ -12,7 +12,6 @@ const InputSwitch = ({ name, value, onChange }: InputSwitchProps) => {
     const [isOn, setIsOn] = useState(value || false);
 
     const toggleSwitch = useCallback(() => {
-        console.log("InputSwitch toggled");
         setIsOn((prev) => !prev);
         onChange?.(!isOn);
     }, [isOn]);
@@ -22,8 +21,6 @@ const InputSwitch = ({ name, value, onChange }: InputSwitchProps) => {
         setIsOn(newValue);
         onChange?.(newValue);
     }, []);
-
-    console.log("InputSwitch rendered");
 
     return (
         <>

@@ -1,5 +1,5 @@
 import { createContext, useContext, type Dispatch } from "react";
-import type { PuzzlePiece } from "../components/puzzle-item";
+import type { PuzzlePiece } from "@/components/puzzle-item";
 
 export type LocaleType = "en" | "fr";
 export type OffsetType = {
@@ -12,6 +12,7 @@ export type SettingType = {
     locale: LocaleType;
     showTimer: boolean;
     showFps: boolean;
+    playSound: boolean;
 };
 
 type GameContextType = {

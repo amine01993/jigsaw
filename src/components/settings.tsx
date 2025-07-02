@@ -1,18 +1,16 @@
 import { memo, useCallback } from "react";
 import { motion } from "motion/react";
+import { useTranslation } from "react-i18next";
 import classNames from "classnames";
 import { useGame } from "@/contexts/game";
 import InputSwitch from "@/components/utilities/input-switch";
 import Modal from "@/components/utilities/modal";
-import { useTranslation } from "react-i18next";
 
 const Settings = () => {
-    console.log("Settings rendered");
     const { t, i18n } = useTranslation();
     const { settings, openSettings, setOpenSettings, setSettings } = useGame();
 
     const handleClose = useCallback(() => {
-        console.log("Close settings");
         setOpenSettings(false);
     }, []);
 

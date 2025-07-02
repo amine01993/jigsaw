@@ -32,7 +32,7 @@ const GameInfo = () => {
     }, [isPaused, started, playTime]);
 
     return (
-        <div className="flex items-center text-[#FFD6C1] absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-[calc(50%+30px)] w-[200px]">
+        <div className="flex items-center text-[#FFD6C1] w-[200px]">
             {settings.showTimer && <p className="text-md w-[90px]" aria-label={t("Play time")}>{playTimeDisplay}</p>}
             {settings.showFps && <GameFPS />}
         </div>

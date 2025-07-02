@@ -2,8 +2,8 @@ import { memo, useMemo } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useSortable } from "@dnd-kit/sortable";
 import classNames from "classnames";
-import { useGame } from "@/contexts/game";
 import { getCoordsFromIndex, isInsideTheGrid } from "@/helpers/helper";
+import { useGame } from "@/contexts/game";
 
 export interface PuzzlePiece {
     id: number;
@@ -15,11 +15,16 @@ export interface PuzzlePiece {
 }
 
 const PuzzleItem: React.FC<{
-    piece: PuzzlePiece | null;
+    piece: PuzzlePiece;
     index: number;
     itemSize: number;
-    disabled?: boolean;
-}> = ({ piece, index, itemSize, disabled }) => {
+    disabled: boolean;
+}> = ({
+    piece,
+    index,
+    itemSize,
+    disabled,
+}) => {
     const {
         attributes,
         listeners,
@@ -27,11 +32,11 @@ const PuzzleItem: React.FC<{
         transition,
         isDragging,
         isSorting,
-        over,
+        isOver,
         setNodeRef,
     } = useSortable({
         id: piece ? piece.id.toString() : `empty-${index}`,
-        disabled: !piece || disabled,
+        disabled,
         animateLayoutChanges: ({ isSorting, wasDragging }) => {
             return isSorting || wasDragging;
         },
@@ -53,93 +58,47 @@ const PuzzleItem: React.FC<{
     }, [oldCoords, gridPadding, puzzleDims]);
 
     return (
-        <>
-            {piece && index > -1 && (
-                <div className="relative">
-                    <motion.img
-                        ref={setNodeRef}
-                        className={classNames(
-                            "puzzle-item",
-                            "object-cover",
-                            {
-                                "focus:outline-fuchsia-300 transition-all duration-300": !disabled,
-                            },
-                            {
-                                "opacity-50": isDragging,
-                                "ring ring-fuchsia-600/50": !isInTheGrid,
-                            }
-                        )}
-                        src={piece.imageUrl}
-                        alt={`Piece Number (${oldCoords.x}, ${oldCoords.y})`}
-                        {...listeners}
-                        {...attributes}
-                        style={{
-                            width: itemSize,
-                            height: itemSize,
-                            transform: isSorting
-                                ? undefined
-                                : `translate3d(${transform?.x || 0}px, ${
-                                      (transform?.y || 0)
-                                  }px, 0)`,
-                            transition,
-                        }}
-                    />
-                    <AnimatePresence>
-                        {String(piece.id) === String(over?.id) && (
-                            <motion.div
-                                initial={{ backgroundColor: "#00996600" }}
-                                animate={{ backgroundColor: "#00996640" }}
-                                exit={{ backgroundColor: "#00996600" }}
-                                className="absolute inset-0 mix-blend-normal"
-                            />
-                        )}
-                    </AnimatePresence>
-                </div>
-            )}
+        <div className={classNames("relative")}>
+            <img
+                ref={setNodeRef}
+                className={classNames(
+                    "puzzle-item",
+                    "object-cover",
+                    {
+                        "focus:outline-fuchsia-300 focus:outline-2 -outline-offset-2 transition-all duration-300":
+                            !disabled,
+                    },
+                    {
+                        "opacity-50": isDragging,
+                        "ring ring-fuchsia-600/50": !isInTheGrid,
+                    }
+                )}
+                src={piece.imageUrl}
+                alt={`Piece Number (${oldCoords.x}, ${oldCoords.y})`}
+                {...listeners}
+                {...attributes}
+                style={{
+                    width: itemSize,
+                    height: itemSize,
+                    transform: isSorting
+                        ? undefined
+                        : `translate3d(${transform?.x || 0}px, ${
+                              transform?.y || 0
+                          }px, 0)`,
+                    transition,
+                }}
+            />
             <AnimatePresence>
-                {piece && index === -1 && (
-                    <motion.img
-                        initial={{ boxShadow: "none" }}
-                        animate={{
-                            boxShadow:
-                                ".0rem .4rem .4rem #f4a8ff50," +
-                                ".0rem -.4rem .4rem #f4a8ff50," +
-                                ".4rem 0rem .4rem #f4a8ff50," +
-                                "-.4rem 0rem .4rem #f4a8ff50",
-                        }}
-                        exit={{ boxShadow: "none" }}
-                        ref={setNodeRef}
-                        className={"object-cover"}
-                        src={piece.imageUrl}
-                        alt="Drag overlay"
-                        style={{
-                            width: itemSize,
-                            height: itemSize,
-                            touchAction: "manipulation",
-                        }}
+                {isOver && (
+                    <motion.div
+                        initial={{ backgroundColor: "#00996600" }}
+                        animate={{ backgroundColor: "#00996640" }}
+                        exit={{ backgroundColor: "#00996600" }}
+                        className="absolute inset-0 mix-blend-normal"
                     />
                 )}
             </AnimatePresence>
-            {!piece && (
-                <div
-                    ref={setNodeRef}
-                    aria-label="Empty piece"
-                    {...listeners}
-                    {...attributes}
-                    style={{ width: itemSize, height: itemSize }}
-                    className={classNames(
-                        "backdrop-blur-md transition-colors duration-300",
-                        {
-                            "bg-white/10":
-                                isInTheGrid && `empty-${index}` !== over?.id,
-                            "bg-emerald-600/40": `empty-${index}` === over?.id,
-                        },
-                        "select-none"
-                    )}
-                    tabIndex={-1}
-                />
-            )}
-        </>
+        </div>
     );
 };
 

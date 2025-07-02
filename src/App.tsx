@@ -15,13 +15,14 @@ function App() {
     const [level, setLevel] = useState(1);
     const [started, setStarted] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
-    const [puzzleItemsNumber, setPuzzleItemsNumber] = useState<number>(9);
+    const [puzzleItemsNumber, setPuzzleItemsNumber] = useState<number>(16);
     const [openPuzzleItemsOptions, setOpenPuzzleItemsOptions] =
         useState<boolean>(false);
     const [settings, setSettings] = useState<SettingType>({
         locale: "en",
         showTimer: true,
         showFps: true,
+        playSound: true,
     });
     const [openSettings, setOpenSettings] = useState(false);
     const [puzzlePieces, setPuzzlePieces] = useState<(PuzzlePiece | null)[]>(
@@ -50,7 +51,6 @@ function App() {
 
     const isGameComplete = useMemo(() => {
         if (puzzlePieces.length > 0) {
-            console.log("isGameComplete puzzlePieces", puzzlePieces)
             for (const piece of puzzlePieces) {
                 if (
                     piece &&
@@ -68,7 +68,6 @@ function App() {
 
     // Pass to the next level
     const handleNextLevel = useCallback(() => {
-        console.log("handleNextLevel");
         if (level + 1 < ANIME_IMAGES.length) {
             setLevel(level + 1);
             setGameInitialized(false);
@@ -76,14 +75,14 @@ function App() {
     }, [level]);
 
     useEffect(() => {
-        if (openSettings) {
+        if (openSettings || openPuzzleItemsOptions) {
             document.body.style.overflow = "hidden";
             setIsPaused(true);
         } else {
             document.body.style.removeProperty("overflow");
             setIsPaused(false);
         }
-    }, [openSettings]);
+    }, [openSettings, openPuzzleItemsOptions]);
 
     return (
         <>

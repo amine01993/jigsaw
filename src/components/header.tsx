@@ -1,40 +1,67 @@
 import { memo, useCallback } from "react";
 import { motion } from "motion/react";
-import { GiAbstract050, GiFastForwardButton, GiGears, GiHelp } from "react-icons/gi";
-import GameInfo from "./game-info";
-import { useGame } from "@/contexts/game";
+import {
+    GiAbstract050,
+    GiFastForwardButton,
+    GiGears,
+    GiHelp,
+    GiSoundOff,
+    GiSoundOn,
+} from "react-icons/gi";
 import { useTranslation } from "react-i18next";
+import { useGame } from "@/contexts/game";
+import GameInfo from "@/components/game-info";
 
 const Header = () => {
     const { t } = useTranslation();
-    const { isGameComplete, setOpenSettings, setOpenPuzzleItemsOptions, handleNextLevel } = useGame();
+    const {
+        isGameComplete,
+        settings,
+        setSettings,
+        setOpenSettings,
+        setOpenPuzzleItemsOptions,
+        handleNextLevel,
+    } = useGame();
 
     const handleOpenSettings = useCallback(() => {
-        console.log("Open settings");
         setOpenSettings(true);
     }, []);
 
     const handleOpenPuzzleOptions = useCallback(() => {
-        console.log("Open puzzle options");
         setOpenPuzzleItemsOptions(true);
     }, []);
 
+    const handlePlaySoundChange = useCallback(() => {
+        setSettings((prevSettings) => {
+            return {
+                ...prevSettings,
+                playSound: !prevSettings.playSound,
+            };
+        });
+    }, []);
+
     return (
-        <header className="relative h-12 bg-white/10 backdrop-blur-sm">
-            <div className="left-4 top-1/2 -translate-y-1/2 absolute">
-                <img src="/logo.svg" alt="Jigsaw Puzzle Logo" className="h-10" />
+        <header className="flex justify-between items-center px-4 h-12 bg-white/10 backdrop-blur-sm">
+            <div className="">
+                <img
+                    src="/logo.svg"
+                    alt="Jigsaw Puzzle Logo"
+                    className="h-10"
+                />
             </div>
 
             <GameInfo />
 
-            <div className="flex flex-wrap items-center text-[#FFD6C1] gap-5 right-4 top-1/2 -translate-y-1/2 absolute">
+            <div className="flex flex-wrap items-center text-[#FFD6C1] gap-5">
                 <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     className="flex gap-3 items-center hover:cursor-pointer"
                     onClick={handleOpenPuzzleOptions}
                 >
-                    <span className="hidden lg:inline-block text-md">{t("Puzzle Size")}</span>
+                    <span className="hidden lg:inline-block text-md">
+                        {t("Puzzle Size")}
+                    </span>
                     <GiAbstract050 size={25} />
                 </motion.button>
                 <motion.button
@@ -65,8 +92,22 @@ const Header = () => {
                     whileTap={{ scale: 0.95 }}
                     className="flex gap-3 items-center hover:cursor-pointer"
                 >
-                    <span className="hidden lg:inline-block text-md">{t("Help")}</span>
+                    <span className="hidden lg:inline-block text-md">
+                        {t("Help")}
+                    </span>
                     <GiHelp size={25} />
+                </motion.button>
+                <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex gap-3 items-center hover:cursor-pointer"
+                    onClick={handlePlaySoundChange}
+                >
+                    <span className="hidden lg:inline-block text-md">
+                        {t("Sound")}
+                    </span>
+                    {settings.playSound && <GiSoundOn size={25} />}
+                    {!settings.playSound && <GiSoundOff size={25} />}
                 </motion.button>
             </div>
         </header>

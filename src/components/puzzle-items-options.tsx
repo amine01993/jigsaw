@@ -1,12 +1,11 @@
 import { memo, useCallback, useRef, useState } from "react";
 import { motion } from "motion/react";
+import { useTranslation } from "react-i18next";
 import classNames from "classnames";
 import { useGame } from "@/contexts/game";
 import Modal from "@/components/utilities/modal";
-import { useTranslation } from "react-i18next";
 
 const PuzzleItemsOptions = () => {
-    console.log("PuzzleItemsOptions rendered");
     const { t } = useTranslation();
     const {
         puzzleItemsNumber,
@@ -36,7 +35,6 @@ const PuzzleItemsOptions = () => {
     ]);
 
     const handleClose = useCallback(() => {
-        console.log("Close puzzle items options");
         setOpenPuzzleItemsOptions(false);
     }, []);
 
