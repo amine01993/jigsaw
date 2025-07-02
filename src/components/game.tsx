@@ -23,13 +23,6 @@ const Game: FC = () => {
                 </p>
             </div> */}
 
-            {/* <div className="absolute w-[min(500px, 90%);] bottom-4 left-1/2 -translate-x-1/2 border-3 border-[#8f3000] rounded-md text-[#8f3000] bg-[#FFD6C1] p-4 flex gap-4 items-center">
-                <p className="font-semibold">
-                    Well done! Let's get to the next puzzle...
-                </p>{" "}
-                <GiFastForwardButton size={20} />
-            </div> */}
-
             <Settings />
             <PuzzleItemsOptions />
         </div>

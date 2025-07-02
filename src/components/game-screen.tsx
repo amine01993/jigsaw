@@ -46,6 +46,8 @@ import { useGame } from "@/contexts/game";
 import Loading from "@/components/loading";
 import PuzzleItemOverlay from "@/components/puzzle-item-overlay";
 import PuzzleItemEmpty from "@/components/puzzle-item-empty";
+import CongratsAnimation from "@/components/congrats-animation";
+import ANIME_IMAGES from "@/data/images.json";
 
 const GameScreen = () => {
     const { t } = useTranslation();
@@ -149,14 +151,11 @@ const GameScreen = () => {
         []
     );
 
-    const handleDragStart = useCallback(
-        (event: DragStartEvent) => {
-            setActiveId(String(event.active.id));
+    const handleDragStart = useCallback((event: DragStartEvent) => {
+        setActiveId(String(event.active.id));
 
-            setStarted(true);
-        },
-        []
-    );
+        setStarted(true);
+    }, []);
 
     const handleDragEnd = useCallback(
         (event: DragEndEvent) => {
@@ -339,14 +338,15 @@ const GameScreen = () => {
             }
 
             if (dropSound.current && settings.playSound) {
-                dropSound.current.play();
+                dropSound.current.play().catch((error) => {
+                    console.error("Error playing drop sound:", error);
+                });
             }
         },
         [puzzlePieces, gridDims, gridPadding, puzzleDims, settings.playSound]
     );
 
-    const handleDragCancel = useCallback(() => {
-    }, []);
+    const handleDragCancel = useCallback(() => {}, []);
 
     const handleGridKeyDown = useCallback(
         (event: KeyboardEvent<HTMLDivElement>) => {
@@ -375,13 +375,14 @@ const GameScreen = () => {
 
     const getImageUrl = useCallback(async () => {
         try {
-            const imageModule = await import(`../assets/images/photo-1.png`);
+            const imageItem = ANIME_IMAGES[level];
+            const imageModule = await import(imageItem.src);
             return imageModule.default;
         } catch (error) {
             console.error("Error fetching image:", error);
             return "";
         }
-    }, []);
+    }, [level]);
 
     // Generate puzzle pieces
     const generatePuzzle = useCallback(() => {
@@ -405,7 +406,7 @@ const GameScreen = () => {
                 _puzzleDims.rows,
                 _puzzleDims.cols
             );
-            
+
             const _gridPadding = getGridPadding(data.offset);
             const _gridDims = getGridDims(_puzzleDims, _gridPadding);
 
@@ -413,8 +414,8 @@ const GameScreen = () => {
                 const ctx = canvasRef.current.getContext("2d");
 
                 if (ctx) {
-                    const w = image.width / _gridDims.cols;
-                    const h = image.height / _gridDims.rows;
+                    const w = image.width / _puzzleDims.cols;
+                    const h = image.height / _puzzleDims.rows;
                     const pieceSize = Math.min(w, h);
 
                     canvasRef.current.width = pieceSize;
@@ -536,12 +537,6 @@ const GameScreen = () => {
         generatePuzzle();
     }, [generatePuzzle]);
 
-    useEffect(() => {
-        if (isGameComplete) {
-            console.log("Game complete!");
-        }
-    }, [isGameComplete]);
-
     return (
         <>
             {(isLoading || !gameInitialized || resizing) && (
@@ -576,14 +571,16 @@ const GameScreen = () => {
                                 height: `${itemSize * gridDims.rows}px`,
                             }}
                             className={classNames(
-                                "absolute left-1/2 top-[calc(50%+1.5rem)] -translate-1/2 justify-center",
+                                "absolute left-1/2 top-[calc(50%+1.5rem)] -translate-1/2 justify-center select-none",
                                 "focus-within:outline-1 focus-within:outline-dashed focus-within:outline-offset-8 focus-within:outline-fuchsia-300/30"
                             )}
                         >
                             {puzzlePieces.length > 0 &&
                                 puzzlePieces.map((piece, index) => {
                                     return (
-                                        <Fragment key={piece?.id ?? `piece-${index}`}>
+                                        <Fragment
+                                            key={piece?.id ?? `piece-${index}`}
+                                        >
                                             {piece && (
                                                 <PuzzleItem
                                                     index={index}
@@ -691,14 +688,22 @@ const GameScreen = () => {
                     <DragOverlay>
                         <AnimatePresence>
                             {activePiece && (
-                                <PuzzleItemOverlay piece={activePiece} itemSize={itemSize} />
+                                <PuzzleItemOverlay
+                                    piece={activePiece}
+                                    itemSize={itemSize}
+                                />
                             )}
                         </AnimatePresence>
                     </DragOverlay>
                 </DndContext>
             )}
             <canvas ref={canvasRef} className="hidden"></canvas>
-            <audio ref={dropSound} preload="auto" src="/audios/card-place-1.ogg" />
+            <audio
+                ref={dropSound}
+                preload="auto"
+                src="/sounds/card-place-1.ogg"
+            />
+            <CongratsAnimation itemSize={itemSize} />
         </>
     );
 };

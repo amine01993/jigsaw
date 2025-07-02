@@ -1,21 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import "./App.css";
+import { MotionConfig } from "motion/react";
 import {
     GameContext,
     type OffsetType,
     type SettingType,
-} from "./contexts/game";
+} from "@/contexts/game";
 import Game from "@/components/game";
-import type { PuzzlePiece } from "./components/puzzle-item";
-import { MotionConfig } from "motion/react";
-import { getGridDims, getGridPadding, getPuzzleDims } from "./helpers/helper";
-import ANIME_IMAGES from "./data/images.json";
+import type { PuzzlePiece } from "@/components/puzzle-item";
+import { getGridDims, getGridPadding, getPuzzleDims } from "@/helpers/helper";
+import ANIME_IMAGES from "@/data/images.json";
+import "./App.css";
 
 function App() {
-    const [level, setLevel] = useState(1);
+    const [level, setLevel] = useState(0);
     const [started, setStarted] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
-    const [puzzleItemsNumber, setPuzzleItemsNumber] = useState<number>(16);
+    const [puzzleItemsNumber, setPuzzleItemsNumber] = useState<number>(9);
     const [openPuzzleItemsOptions, setOpenPuzzleItemsOptions] =
         useState<boolean>(false);
     const [settings, setSettings] = useState<SettingType>({
@@ -68,10 +68,10 @@ function App() {
 
     // Pass to the next level
     const handleNextLevel = useCallback(() => {
-        if (level + 1 < ANIME_IMAGES.length) {
-            setLevel(level + 1);
-            setGameInitialized(false);
-        }
+        setLevel((level + 1) % ANIME_IMAGES.length);
+        setGameInitialized(false);
+        setStarted(false);
+        setIsPaused(false);
     }, [level]);
 
     useEffect(() => {

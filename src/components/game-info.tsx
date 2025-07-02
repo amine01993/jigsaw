@@ -5,7 +5,6 @@ import GameFPS from "./game-fps";
 import { useTranslation } from "react-i18next";
 
 const GameInfo = () => {
-    // console.log("GameInfo rendered");
     const { t } = useTranslation();
     const { settings, started, isPaused } = useGame();
     const [playTime, setPlayTime] = useState(0);
@@ -21,6 +20,10 @@ const GameInfo = () => {
             timeout = setTimeout(() => {
                 setPlayTime((prev) => prev + 1);
             }, 1000);
+        }
+
+        if(!started) {
+            setPlayTime(0);
         }
 
         return () => {
