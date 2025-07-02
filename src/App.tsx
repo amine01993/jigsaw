@@ -36,6 +36,7 @@ function App() {
         bottom: 0,
         right: 0,
     });
+    const [placeholders, setPlaceholders] = useState<{ x: number; y: number; imageUrl: string }[]>([]);
 
     const puzzleDims = useMemo(() => {
         return getPuzzleDims(puzzleItemsNumber);
@@ -114,6 +115,8 @@ function App() {
                     gridPadding,
                     gridDims,
                     isGameComplete,
+                    placeholders,
+                    setPlaceholders,
                     handleNextLevel,
                 }}
             >

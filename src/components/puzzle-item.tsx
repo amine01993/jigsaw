@@ -11,7 +11,6 @@ export interface PuzzlePiece {
     position: { x: number; y: number } | null;
     correctPosition: { x: number; y: number };
     outsidePosition: { x: number; y: number };
-    isPlaceholder: boolean;
 }
 
 const PuzzleItem: React.FC<{

@@ -69,7 +69,7 @@ const Header = () => {
                     whileTap={{ scale: isGameComplete ? 0.95 : 1 }}
                     className={`flex gap-3 items-center hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50`}
                     onClick={handleNextLevel}
-                    // disabled={!isGameComplete}
+                    disabled={!isGameComplete}
                 >
                     <span className="hidden lg:inline-block text-md">
                         {t("Next Puzzle")}

@@ -38,6 +38,7 @@ import {
     getGridPadding,
     getIndexFromCoords,
     getOffsetAndOutsidePositions,
+    getPlaceholderCount,
     getPuzzleDims,
     isInsideTheGrid,
 } from "@/helpers/helper";
@@ -62,11 +63,13 @@ const GameScreen = () => {
         puzzleItemsNumber,
         puzzlePieces,
         settings,
+        placeholders,
         setPuzzlePieces,
         setGameInitialized,
         setIsLoading,
         setOffset,
         setStarted,
+        setPlaceholders,
         puzzleDims,
         gridPadding,
         gridDims,
@@ -439,12 +442,15 @@ const GameScreen = () => {
                                 position: null,
                                 correctPosition: { x: c, y: r },
                                 outsidePosition: { x: -1, y: -1 },
-                                isPlaceholder: false,
                             });
                         }
                     }
                 }
             }
+
+            const _placeholders: { x: number; y: number; imageUrl: string }[] =
+                [];
+            const placeholderCount = getPlaceholderCount(puzzleItemsNumber);
 
             // Shuffle the grid positions
             pieces.sort((_, __) => {
@@ -454,6 +460,13 @@ const GameScreen = () => {
             // Set the position of each piece outside the grid
             for (let i = 0; i < pieces.length; i++) {
                 pieces[i].outsidePosition = data.outsidePositions[i];
+                if (i < placeholderCount) {
+                    _placeholders.push({
+                        x: pieces[i].correctPosition.x,
+                        y: pieces[i].correctPosition.y,
+                        imageUrl: pieces[i].imageUrl,
+                    });
+                }
             }
 
             // Set the puzzle pieces in the grid
@@ -478,6 +491,8 @@ const GameScreen = () => {
             setOffset(data.offset);
             setPuzzlePieces(gamePieces);
             setGameInitialized(true);
+            setPlaceholders(_placeholders);
+            console.log("placeholders", _placeholders);
         };
 
         image.onerror = () => {
@@ -577,6 +592,37 @@ const GameScreen = () => {
                         >
                             {puzzlePieces.length > 0 &&
                                 puzzlePieces.map((piece, index) => {
+                                    let placeholder = undefined;
+                                    if (!piece) {
+                                        const coords = getCoordsFromIndex(
+                                            index,
+                                            gridDims.cols
+                                        );
+                                        const isInside = isInsideTheGrid(
+                                            coords.x,
+                                            coords.y,
+                                            gridPadding,
+                                            puzzleDims
+                                        );
+                                        if (isInside) {
+                                            const position = {
+                                                x: coords.x - gridPadding.x,
+                                                y: coords.y - gridPadding.y,
+                                            };
+                                            placeholder = placeholders.find(
+                                                (p) =>
+                                                    p.x === position.x &&
+                                                    p.y === position.y
+                                            );
+                                        }
+                                    }
+
+                                    // console.log("coords", coords, "isInside", isInside, "position", position, "placeholder", placeholder);
+                                    // const isPlaceHolder = placeholders.find(
+                                    //     (placeholder) =>
+                                    //         placeholder.x === index % gridDims.cols &&
+                                    //         placeholder.y === Math.floor(index / gridDims.cols)
+                                    // );
                                     return (
                                         <Fragment
                                             key={piece?.id ?? `piece-${index}`}
@@ -591,6 +637,7 @@ const GameScreen = () => {
                                             )}
                                             {!piece && (
                                                 <PuzzleItemEmpty
+                                                    piece={placeholder}
                                                     index={index}
                                                     itemSize={itemSize}
                                                 />

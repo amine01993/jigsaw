@@ -187,3 +187,11 @@ export function getDurationFromSeconds(seconds: number): string {
         .filter(Boolean)
         .join(":");
 }
+
+export function getPlaceholderCount(puzzleItemsNumber: number) {
+    const dim = Math.floor(Math.sqrt(puzzleItemsNumber));
+    if (dim * dim !== puzzleItemsNumber) {
+        throw new Error("Invalid puzzle item number");
+    }
+    return dim - 2;
+}

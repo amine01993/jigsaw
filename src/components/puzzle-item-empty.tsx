@@ -5,9 +5,10 @@ import { getCoordsFromIndex, isInsideTheGrid } from "@/helpers/helper";
 import { useGame } from "@/contexts/game";
 
 const PuzzleItemEmpty: React.FC<{
+    piece?: {x: number; y: number; imageUrl: string};
     index: number;
     itemSize: number;
-}> = ({ index, itemSize }) => {
+}> = ({ index, itemSize, piece }) => {
     const { attributes, isOver, setNodeRef } = useSortable({
         id: `empty-${index}`,
         disabled: true,
@@ -44,7 +45,20 @@ const PuzzleItemEmpty: React.FC<{
                 "select-none"
             )}
             tabIndex={-1}
-        />
+        >
+            {piece && (
+                <img
+                    src={piece.imageUrl}
+                    alt="Hint puzzle piece"
+                    className="object-cover opacity-40"
+                    style={{
+                        width: itemSize,
+                        height: itemSize,
+                        touchAction: "manipulation",
+                    }}
+                />
+            )}
+        </div>
     );
 };
 

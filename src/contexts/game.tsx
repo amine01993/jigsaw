@@ -42,6 +42,8 @@ type GameContextType = {
     gridPadding: { x: number; y: number };
     gridDims: { cols: number; rows: number };
     isGameComplete: boolean;
+    placeholders: {x: number; y: number; imageUrl: string}[];
+    setPlaceholders: Dispatch<React.SetStateAction<{x: number; y: number; imageUrl: string}[]>>;
     handleNextLevel: () => void;
 };
 
