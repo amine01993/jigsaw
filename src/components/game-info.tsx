@@ -2,10 +2,11 @@ import { useGame } from "@/contexts/game";
 import { getDurationFromSeconds } from "@/helpers/helper";
 import { memo, useEffect, useMemo, useState } from "react";
 import GameFPS from "./game-fps";
+import { useTranslation } from "react-i18next";
 
 const GameInfo = () => {
     // console.log("GameInfo rendered");
-
+    const { t } = useTranslation();
     const { settings, started, isPaused } = useGame();
     const [playTime, setPlayTime] = useState(0);
 
@@ -31,8 +32,8 @@ const GameInfo = () => {
     }, [isPaused, started, playTime]);
 
     return (
-        <div className="flex items-center text-[#FFD6C1] absolute top-1/2 left-1/3 -translate-y-1/2 -translate-x-1/3 w-[200px]">
-            {settings.showTimer && <p className="text-md w-[90px]" aria-label="Play time">{playTimeDisplay}</p>}
+        <div className="flex items-center text-[#FFD6C1] absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-[calc(50%+30px)] w-[200px]">
+            {settings.showTimer && <p className="text-md w-[90px]" aria-label={t("Play time")}>{playTimeDisplay}</p>}
             {settings.showFps && <GameFPS />}
         </div>
     );

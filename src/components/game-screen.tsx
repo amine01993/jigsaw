@@ -42,10 +42,11 @@ import {
 import PuzzleItem, { type PuzzlePiece } from "@/components/puzzle-item";
 import { useGame } from "@/contexts/game";
 import Loading from "@/components/loading";
+import { useTranslation } from "react-i18next";
 
 const GameScreen = () => {
     console.log("GameScreen rendered");
-
+    const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const resizeTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -102,9 +103,9 @@ const GameScreen = () => {
     }, [activeId, puzzlePieces]);
 
     const loadingText = useMemo(() => {
-        if (isLoading) return "Loading...";
-        if (!gameInitialized) return "Initializing game...";
-        if (resizing) return "Resizing puzzle grid...";
+        if (isLoading) return t("Loading...");
+        if (!gameInitialized) return t("Initializing game...");
+        if (resizing) return t("Resizing puzzle grid...");
         return "";
     }, [isLoading, gameInitialized, resizing]);
 

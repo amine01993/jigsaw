@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const GameFPS = () => {
+    const { t } = useTranslation();
     const lastTime = useRef(performance.now());
     const fpsRef = useRef(0);
     const [fps, setFps] = useState(60);
@@ -37,7 +39,7 @@ const GameFPS = () => {
         };
     }, []);
 
-    return <p className="text-md">FPS: {fps}</p>;
+    return <p className="text-md">{t("FPS")}: {fps}</p>;
 };
 
 export default GameFPS;

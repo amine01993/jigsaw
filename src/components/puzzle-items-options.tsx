@@ -3,9 +3,11 @@ import { motion } from "motion/react";
 import classNames from "classnames";
 import { useGame } from "@/contexts/game";
 import Modal from "@/components/utilities/modal";
+import { useTranslation } from "react-i18next";
 
 const PuzzleItemsOptions = () => {
     console.log("PuzzleItemsOptions rendered");
+    const { t } = useTranslation();
     const {
         puzzleItemsNumber,
         openPuzzleItemsOptions,
@@ -37,7 +39,7 @@ const PuzzleItemsOptions = () => {
         console.log("Close puzzle items options");
         setOpenPuzzleItemsOptions(false);
     }, []);
-    
+
     const handlePuzzleItemsChange = useCallback(
         (e: React.MouseEvent<HTMLButtonElement>) => {
             const number = e.currentTarget.dataset.number;
@@ -61,7 +63,7 @@ const PuzzleItemsOptions = () => {
     return (
         <Modal isOpen={openPuzzleItemsOptions} onClose={handleClose}>
             <h2 className="text-[#FFD6C1] text-2xl font-bold sm:text-center">
-                Puzzle Size
+                {t("Puzzle Size")}
             </h2>
 
             <div className="text-[#FFD6C1] grid grid-cols-3 mt-10">

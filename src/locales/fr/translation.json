@@ -1,0 +1,14 @@
+{
+    "Puzzle Size": "Taille du puzzle",
+    "Next Puzzle": "Prochain puzzle",
+    "Settings": "Paramètres",
+    "Help": "Aide",
+    "Loading...": "Chargement...",
+    "Initializing game...": "Initialisation du jeu...",
+    "Resizing puzzle grid...": "Redimensionnement de la grille du puzzle...",
+    "Show Timer": "Afficher le chronomètre",
+    "Show FPS": "Afficher le FPS",
+    "FPS:": "FPS:",
+    "Play time:": "Temps de jeu:",
+    "Empty piece": "Pièce vide"
+}

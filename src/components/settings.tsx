@@ -4,9 +4,11 @@ import classNames from "classnames";
 import { useGame } from "@/contexts/game";
 import InputSwitch from "@/components/utilities/input-switch";
 import Modal from "@/components/utilities/modal";
+import { useTranslation } from "react-i18next";
 
 const Settings = () => {
     console.log("Settings rendered");
+    const { t, i18n } = useTranslation();
     const { settings, openSettings, setOpenSettings, setSettings } = useGame();
 
     const handleClose = useCallback(() => {
@@ -25,6 +27,7 @@ const Settings = () => {
                     locale: locale as "en" | "fr",
                 };
             });
+            i18n.changeLanguage(locale);
         },
         []
     );
@@ -46,7 +49,7 @@ const Settings = () => {
     return (
         <Modal isOpen={openSettings} onClose={handleClose}>
             <h2 className="text-[#FFD6C1] text-2xl font-bold sm:text-center">
-                Settings
+                {t("Settings")}
             </h2>
 
             <div className="flex flex-col gap-10 mt-10">
@@ -109,15 +112,15 @@ const Settings = () => {
                     </button>
                 </div>
 
-                <div className="text-[#FFD6C1] grid grid-cols-[100px_1fr] gap-x-4 gap-y-10 items-center">
-                    <label htmlFor="show-timer">Show Timer</label>
+                <div className="text-[#FFD6C1] grid grid-cols-[200px_1fr] gap-x-4 gap-y-10 items-center">
+                    <label htmlFor="show-timer">{t("Show Timer")}</label>
                     <InputSwitch
                         name="show-timer"
                         value={settings.showTimer}
                         onChange={handleShowTimerChange}
                     />
 
-                    <label htmlFor="show-fps">Show FPS</label>
+                    <label htmlFor="show-fps">{t("Show FPS")}</label>
                     <InputSwitch
                         name="show-fps"
                         value={settings.showFps}
