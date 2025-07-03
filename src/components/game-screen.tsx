@@ -492,7 +492,6 @@ const GameScreen = () => {
             setPuzzlePieces(gamePieces);
             setGameInitialized(true);
             setPlaceholders(_placeholders);
-            console.log("placeholders", _placeholders);
         };
 
         image.onerror = () => {
@@ -593,7 +592,7 @@ const GameScreen = () => {
                             {puzzlePieces.length > 0 &&
                                 puzzlePieces.map((piece, index) => {
                                     let placeholder = undefined;
-                                    if (!piece) {
+                                    if (!piece && settings.showHints) {
                                         const coords = getCoordsFromIndex(
                                             index,
                                             gridDims.cols
@@ -617,12 +616,6 @@ const GameScreen = () => {
                                         }
                                     }
 
-                                    // console.log("coords", coords, "isInside", isInside, "position", position, "placeholder", placeholder);
-                                    // const isPlaceHolder = placeholders.find(
-                                    //     (placeholder) =>
-                                    //         placeholder.x === index % gridDims.cols &&
-                                    //         placeholder.y === Math.floor(index / gridDims.cols)
-                                    // );
                                     return (
                                         <Fragment
                                             key={piece?.id ?? `piece-${index}`}

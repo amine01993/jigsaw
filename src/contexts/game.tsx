@@ -13,6 +13,7 @@ export type SettingType = {
     showTimer: boolean;
     showFps: boolean;
     playSound: boolean;
+    showHints: boolean;
 };
 
 type GameContextType = {
@@ -22,10 +23,12 @@ type GameContextType = {
     setPuzzleItemsNumber: Dispatch<React.SetStateAction<number>>;
     openPuzzleItemsOptions: boolean;
     setOpenPuzzleItemsOptions: Dispatch<React.SetStateAction<boolean>>;
-    settings: SettingType;
     setSettings: Dispatch<React.SetStateAction<SettingType>>;
     openSettings: boolean;
     setOpenSettings: Dispatch<React.SetStateAction<boolean>>;
+    openMobileMenu: boolean;
+    setOpenMobileMenu: Dispatch<React.SetStateAction<boolean>>;
+    settings: SettingType;
     puzzlePieces: (PuzzlePiece | null)[];
     setPuzzlePieces: Dispatch<React.SetStateAction<(PuzzlePiece | null)[]>>;
     isLoading: boolean;

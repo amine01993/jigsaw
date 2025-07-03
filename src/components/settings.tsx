@@ -44,6 +44,13 @@ const Settings = () => {
         }));
     }, []);
 
+    const handleShowHintsChange = useCallback((value: boolean) => {
+        setSettings((prevSettings) => ({
+            ...prevSettings,
+            showHints: value,
+        }));
+    }, []);
+
     return (
         <Modal isOpen={openSettings} onClose={handleClose}>
             <h2 className="text-[#FFD6C1] text-2xl font-bold sm:text-center">
@@ -123,6 +130,13 @@ const Settings = () => {
                         name="show-fps"
                         value={settings.showFps}
                         onChange={handleShowFpsChange}
+                    />
+
+                    <label htmlFor="show-hints">{t("Show Hints")}</label>
+                    <InputSwitch
+                        name="show-hints"
+                        value={settings.showHints}
+                        onChange={handleShowHintsChange}
                     />
                 </div>
             </div>

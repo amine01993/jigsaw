@@ -21,7 +21,7 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="w-full h-screen fixed top-0 left-0 bg-white/50 backdrop-blur-md"
+                    className="w-full h-screen fixed top-0 left-0 bg-white/50 backdrop-blur-md z-1"
                     onClick={onClose}
                 >
                     <motion.div

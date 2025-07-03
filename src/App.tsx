@@ -15,28 +15,31 @@ function App() {
     const [level, setLevel] = useState(0);
     const [started, setStarted] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
-    const [puzzleItemsNumber, setPuzzleItemsNumber] = useState<number>(9);
-    const [openPuzzleItemsOptions, setOpenPuzzleItemsOptions] =
-        useState<boolean>(false);
+    const [puzzleItemsNumber, setPuzzleItemsNumber] = useState(9);
+    const [openPuzzleItemsOptions, setOpenPuzzleItemsOptions] = useState(false);
+    const [openSettings, setOpenSettings] = useState(false);
+    const [openMobileMenu, setOpenMobileMenu] = useState(false);
     const [settings, setSettings] = useState<SettingType>({
         locale: "en",
         showTimer: true,
         showFps: true,
+        showHints: true,
         playSound: true,
     });
-    const [openSettings, setOpenSettings] = useState(false);
     const [puzzlePieces, setPuzzlePieces] = useState<(PuzzlePiece | null)[]>(
         []
     );
     const [isLoading, setIsLoading] = useState(true);
-    const [gameInitialized, setGameInitialized] = useState<boolean>(false);
+    const [gameInitialized, setGameInitialized] = useState(false);
     const [offset, setOffset] = useState<OffsetType>({
         top: 0,
         left: 0,
         bottom: 0,
         right: 0,
     });
-    const [placeholders, setPlaceholders] = useState<{ x: number; y: number; imageUrl: string }[]>([]);
+    const [placeholders, setPlaceholders] = useState<
+        { x: number; y: number; imageUrl: string }[]
+    >([]);
 
     const puzzleDims = useMemo(() => {
         return getPuzzleDims(puzzleItemsNumber);
@@ -73,12 +76,14 @@ function App() {
         setGameInitialized(false);
         setStarted(false);
         setIsPaused(false);
+        setOpenMobileMenu(false);
     }, [level]);
 
     useEffect(() => {
         if (openSettings || openPuzzleItemsOptions) {
             document.body.style.overflow = "hidden";
             setIsPaused(true);
+            setOpenMobileMenu(false);
         } else {
             document.body.style.removeProperty("overflow");
             setIsPaused(false);
@@ -95,10 +100,12 @@ function App() {
                     setPuzzleItemsNumber,
                     openPuzzleItemsOptions,
                     setOpenPuzzleItemsOptions,
-                    settings,
-                    setSettings,
                     openSettings,
                     setOpenSettings,
+                    openMobileMenu,
+                    setOpenMobileMenu,
+                    settings,
+                    setSettings,
                     puzzlePieces,
                     setPuzzlePieces,
                     isLoading,
