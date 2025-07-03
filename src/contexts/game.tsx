@@ -1,5 +1,6 @@
 import { createContext, useContext, type Dispatch } from "react";
 import type { PuzzlePiece } from "@/components/puzzle-item";
+import type { PuzzlePlaceholder } from "@/components/puzzle-item-empty";
 
 export type LocaleType = "en" | "fr";
 export type OffsetType = {
@@ -15,6 +16,11 @@ export type SettingType = {
     playSound: boolean;
     showHints: boolean;
 };
+export interface GameData {
+    pieces: (PuzzlePiece | null)[];
+    placeholders: PuzzlePlaceholder[];
+    offset: OffsetType;
+}
 
 type GameContextType = {
     level: number;
@@ -49,8 +55,8 @@ type GameContextType = {
     gridPadding: { x: number; y: number };
     gridDims: { cols: number; rows: number };
     isGameComplete: boolean;
-    placeholders: {x: number; y: number; imageUrl: string}[];
-    setPlaceholders: Dispatch<React.SetStateAction<{x: number; y: number; imageUrl: string}[]>>;
+    placeholders: PuzzlePlaceholder[];
+    setPlaceholders: Dispatch<React.SetStateAction<PuzzlePlaceholder[]>>;
     handleNextLevel: () => void;
 };
 

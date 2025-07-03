@@ -20,7 +20,7 @@ const PuzzleItemOverlay: React.FC<{
                 }}
                 exit={{ boxShadow: "none" }}
                 className={"object-cover"}
-                src={piece.imageUrl}
+                src={piece.image as string}
                 alt="Drag overlay"
                 style={{
                     width: itemSize,

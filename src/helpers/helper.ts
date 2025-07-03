@@ -19,14 +19,8 @@ export function getOffsetAndOutsidePositions(rows: number, cols: number) {
     while (pieceIndex < piecesLength) {
         c = colStart;
         r = rowStart;
-        // console.log(
-        //     `rowStart=${rowStart}, colStart=${colStart}, rowEnd=${rowEnd}, colEnd=${colEnd}`
-        // );
         while (pieceIndex < piecesLength && c <= colEnd) {
             positions.push({ x: c, y: r });
-            // console.log(
-            //     `Setting piece ${pieceIndex} outside position to (${c}, ${r})`
-            // );
             pieceIndex++;
             c++;
         }
@@ -36,9 +30,6 @@ export function getOffsetAndOutsidePositions(rows: number, cols: number) {
         r = pieceIndex < piecesLength && r <= rowEnd ? r + 1 : r;
         while (pieceIndex < piecesLength && r <= rowEnd) {
             positions.push({ x: c, y: r });
-            // console.log(
-            //     `Setting piece ${pieceIndex} outside position to (${c}, ${r})`
-            // );
             pieceIndex++;
             r++;
         }
@@ -52,9 +43,6 @@ export function getOffsetAndOutsidePositions(rows: number, cols: number) {
                 : colStart;
         while (pieceIndex < piecesLength && c >= colStart) {
             positions.push({ x: c, y: r });
-            // console.log(
-            //     `Setting piece ${pieceIndex} outside position to (${c}, ${r})`
-            // );
             pieceIndex++;
             c--;
         }
@@ -68,19 +56,12 @@ export function getOffsetAndOutsidePositions(rows: number, cols: number) {
                 : rowStart;
         while (pieceIndex < piecesLength && r >= rowStart) {
             positions.push({ x: c, y: r });
-            // console.log(
-            //     `Setting piece ${pieceIndex} outside position to (${c}, ${r})`
-            // );
             pieceIndex++;
             r--;
         }
 
         r = Math.max(r, rowStart);
         topRows = Math.max(topRows, -r);
-
-        // console.log(
-        //     `Updated topRows=${topRows}, rightCols=${rightCols}, bottomRows=${bottomRows}, leftCols=${leftCols}`
-        // );
 
         rowEnd++;
         colEnd++;
@@ -195,3 +176,5 @@ export function getPlaceholderCount(puzzleItemsNumber: number) {
     }
     return dim - 2;
 }
+
+

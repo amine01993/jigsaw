@@ -4,8 +4,12 @@ import classNames from "classnames";
 import { getCoordsFromIndex, isInsideTheGrid } from "@/helpers/helper";
 import { useGame } from "@/contexts/game";
 
+export interface PuzzlePlaceholder {
+    x: number; y: number; image: string | Blob;
+}
+
 const PuzzleItemEmpty: React.FC<{
-    piece?: { x: number; y: number; imageUrl: string };
+    piece?: PuzzlePlaceholder;
     index: number;
     itemSize: number;
 }> = ({ index, itemSize, piece }) => {
@@ -52,7 +56,7 @@ const PuzzleItemEmpty: React.FC<{
         >
             {piece && (
                 <img
-                    src={piece.imageUrl}
+                    src={piece.image as string}
                     alt="Hint puzzle piece"
                     className="object-cover opacity-40"
                     style={{

@@ -5,9 +5,10 @@ import {
     type OffsetType,
     type SettingType,
 } from "@/contexts/game";
+import { getGridDims, getGridPadding, getPuzzleDims } from "@/helpers/helper";
 import Game from "@/components/game";
 import type { PuzzlePiece } from "@/components/puzzle-item";
-import { getGridDims, getGridPadding, getPuzzleDims } from "@/helpers/helper";
+import type { PuzzlePlaceholder } from "./components/puzzle-item-empty";
 import ANIME_IMAGES from "@/data/images.json";
 import "./App.css";
 
@@ -39,9 +40,7 @@ function App() {
         bottom: 0,
         right: 0,
     });
-    const [placeholders, setPlaceholders] = useState<
-        { x: number; y: number; imageUrl: string }[]
-    >([]);
+    const [placeholders, setPlaceholders] = useState<PuzzlePlaceholder[]>([]);
 
     const puzzleDims = useMemo(() => {
         return getPuzzleDims(puzzleItemsNumber);
@@ -85,31 +84,33 @@ function App() {
         setIsVisible(document.visibilityState === "visible");
     }, []);
 
-    const handleKeyDown = useCallback((e: KeyboardEvent) => {
-        console.log("Key pressed:", e.key);
-        if (e.key === "Escape") {
-            if (openSettings || openPuzzleItemsOptions || openHelp) {
-                setOpenSettings(false);
-                setOpenPuzzleItemsOptions(false);
-                setOpenHelp(false);
-            } else {
-                setIsPaused(false);
+    const handleKeyDown = useCallback(
+        (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                if (openSettings || openPuzzleItemsOptions || openHelp) {
+                    setOpenSettings(false);
+                    setOpenPuzzleItemsOptions(false);
+                    setOpenHelp(false);
+                } else {
+                    setIsPaused(false);
+                }
+            } else if (e.key === "P" || e.key === "p") {
+                setIsPaused(true);
+            } else if (e.key === "H" || e.key === "h") {
+                setOpenHelp(true);
+            } else if (e.key === "D" || e.key === "d") {
+                setOpenPuzzleItemsOptions(true);
+            } else if (e.key === "S" || e.key === "s") {
+                setOpenSettings(true);
+            } else if (e.key === "M" || e.key === "m") {
+                setSettings((prev) => ({
+                    ...prev,
+                    playSound: !prev.playSound,
+                }));
             }
-        } else if (e.key === "P" || e.key === "p") {
-            setIsPaused(true);
-        } else if (e.key === "H" || e.key === "h") {
-            setOpenHelp(true);
-        } else if (e.key === "D" || e.key === "d") {
-            setOpenPuzzleItemsOptions(true);
-        } else if (e.key === "S" || e.key === "s") {
-            setOpenSettings(true);
-        } else if (e.key === "M" || e.key === "m") {
-            setSettings((prev) => ({
-                ...prev,
-                playSound: !prev.playSound,
-            }));
-        }
-    }, [openSettings, openPuzzleItemsOptions, openHelp]);
+        },
+        [openSettings, openPuzzleItemsOptions, openHelp]
+    );
 
     useEffect(() => {
         if (openSettings || openPuzzleItemsOptions || openHelp) {
@@ -125,7 +126,10 @@ function App() {
         document.addEventListener("keydown", handleKeyDown);
 
         return () => {
-            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            document.removeEventListener(
+                "visibilitychange",
+                handleVisibilityChange
+            );
             document.removeEventListener("keydown", handleKeyDown);
         };
     }, [handleVisibilityChange, handleKeyDown]);

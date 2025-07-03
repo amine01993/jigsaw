@@ -34,26 +34,24 @@ import classNames from "classnames";
 import {
     clonePieces,
     getCoordsFromIndex,
-    getGridDims,
-    getGridPadding,
     getIndexFromCoords,
-    getOffsetAndOutsidePositions,
-    getPlaceholderCount,
-    getPuzzleDims,
     isInsideTheGrid,
 } from "@/helpers/helper";
 import PuzzleItem, { type PuzzlePiece } from "@/components/puzzle-item";
-import { useGame } from "@/contexts/game";
+import { useGame, type GameData } from "@/contexts/game";
 import Loading from "@/components/loading";
 import PuzzleItemOverlay from "@/components/puzzle-item-overlay";
 import PuzzleItemEmpty from "@/components/puzzle-item-empty";
 import CongratsAnimation from "@/components/congrats-animation";
 import ANIME_IMAGES from "@/data/images.json";
+import CanvasWorker from "@/workers/canvas.worker?worker";
+import { generateGameData, htmlImageToImageData } from "@/helpers/image";
 
 const GameScreen = () => {
     const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const canvasWorkerRef = useRef<Worker | null>(null);
     const resizeTimeout = useRef<NodeJS.Timeout | null>(null);
     const dropSound = useRef<HTMLAudioElement | null>(null);
     const {
@@ -389,9 +387,6 @@ const GameScreen = () => {
 
     // Generate puzzle pieces
     const generatePuzzle = useCallback(() => {
-        // Choose image depending on the level
-        const pieces: PuzzlePiece[] = [];
-
         const image = new Image();
         image.crossOrigin = "anonymous";
 
@@ -403,95 +398,41 @@ const GameScreen = () => {
             image.src = imageUrl;
         });
 
-        image.onload = () => {
-            const _puzzleDims = getPuzzleDims(puzzleItemsNumber);
-            const data = getOffsetAndOutsidePositions(
-                _puzzleDims.rows,
-                _puzzleDims.cols
-            );
-
-            const _gridPadding = getGridPadding(data.offset);
-            const _gridDims = getGridDims(_puzzleDims, _gridPadding);
-
-            if (canvasRef.current) {
-                const ctx = canvasRef.current.getContext("2d");
-
-                if (ctx) {
-                    const w = image.width / _puzzleDims.cols;
-                    const h = image.height / _puzzleDims.rows;
-                    const pieceSize = Math.min(w, h);
-
-                    canvasRef.current.width = pieceSize;
-                    canvasRef.current.height = pieceSize;
-
-                    // Loop through each cell and extract the puzzle piece
-                    for (let r = 0; r < _puzzleDims.rows; r++) {
-                        for (let c = 0; c < _puzzleDims.cols; c++) {
-                            // Draw the puzzle piece on the canvas
-                            ctx.drawImage(
-                                image,
-                                -c * pieceSize,
-                                -r * pieceSize,
-                                image.width,
-                                image.height
-                            );
-
-                            pieces.push({
-                                id: r * 10000 + c,
-                                imageUrl: canvasRef.current.toDataURL(),
-                                position: null,
-                                correctPosition: { x: c, y: r },
-                                outsidePosition: { x: -1, y: -1 },
-                            });
-                        }
-                    }
-                }
+        image.onload = async () => {
+            if (!canvasRef.current) {
+                alert("Canvas element is not available!");
+                return;
             }
 
-            const _placeholders: { x: number; y: number; imageUrl: string }[] =
-                [];
-            const placeholderCount = getPlaceholderCount(puzzleItemsNumber);
+            let data;
+            if (canvasWorkerRef.current) {
+                const imageData = htmlImageToImageData(
+                    canvasRef.current,
+                    image
+                );
+                const newCanvas = document.createElement("canvas");
+                const offscreen = newCanvas.transferControlToOffscreen();
 
-            // Shuffle the grid positions
-            pieces.sort((_, __) => {
-                return Math.random() < 0.5 ? 1 : -1;
-            });
-
-            // Set the position of each piece outside the grid
-            for (let i = 0; i < pieces.length; i++) {
-                pieces[i].outsidePosition = data.outsidePositions[i];
-                if (i < placeholderCount) {
-                    _placeholders.push({
-                        x: pieces[i].correctPosition.x,
-                        y: pieces[i].correctPosition.y,
-                        imageUrl: pieces[i].imageUrl,
-                    });
-                }
-            }
-
-            // Set the puzzle pieces in the grid
-            const gamePieces: (PuzzlePiece | null)[] = Array.from(
-                {
-                    length: _gridDims.rows * _gridDims.cols,
-                },
-                () => null
-            );
-
-            for (const piece of pieces) {
-                const index = getIndexFromCoords(
-                    piece.outsidePosition.x + _gridPadding.x,
-                    piece.outsidePosition.y + _gridPadding.y,
-                    _gridDims.rows,
-                    _gridDims.cols
+                data = await canvasWorkerRef.current.postMessage(
+                    {
+                        puzzleItemsNumber,
+                        canvas: offscreen,
+                        image: imageData,
+                    },
+                    [offscreen]
+                );
+            } else {
+                data = await generateGameData(
+                    puzzleItemsNumber,
+                    canvasRef.current,
+                    image
                 );
 
-                gamePieces[index] = piece;
+                setOffset(data.offset);
+                setPuzzlePieces(data.pieces);
+                setGameInitialized(true);
+                setPlaceholders(data.placeholders);
             }
-
-            setOffset(data.offset);
-            setPuzzlePieces(gamePieces);
-            setGameInitialized(true);
-            setPlaceholders(_placeholders);
         };
 
         image.onerror = () => {
@@ -533,10 +474,7 @@ const GameScreen = () => {
         updateItemSize();
     }, [updateItemSize]);
 
-    // Initialize game on component mount
     useEffect(() => {
-        setIsLoading(false);
-
         window.addEventListener("resize", handleWindowResize);
 
         return () => {
@@ -550,6 +488,64 @@ const GameScreen = () => {
     useEffect(() => {
         generatePuzzle();
     }, [generatePuzzle]);
+
+    // Initialize game on component mount
+    useEffect(() => {
+        setIsLoading(false);
+        canvasRef.current = document.createElement("canvas");
+
+        // Check if OffscreenCanvas is supported before starting to use the canvas worker
+        if (typeof OffscreenCanvas !== "undefined") {
+            canvasWorkerRef.current = new CanvasWorker();
+        }
+
+        return () => {
+            if (canvasWorkerRef.current) {
+                canvasWorkerRef.current.terminate();
+                canvasWorkerRef.current = null;
+            }
+        };
+    }, []);
+
+    // Clear memory from blob URLs
+    useEffect(() => {
+        if (typeof OffscreenCanvas !== "undefined" && canvasWorkerRef.current) {
+            canvasWorkerRef.current.onmessage = (
+                event: MessageEvent<{ result: GameData }>
+            ) => {
+                const { result } = event.data;
+
+                result.pieces.forEach((piece) => {
+                    if (piece && piece.image instanceof Blob) {
+                        piece.image = URL.createObjectURL(piece.image);
+                    }
+                });
+                result.placeholders.forEach((p) => {
+                    if (p.image instanceof Blob) {
+                        p.image = URL.createObjectURL(p.image);
+                    }
+                });
+
+                puzzlePieces.forEach((piece) => {
+                    if (piece && String(piece.image).startsWith("blob:")) {
+                        URL.revokeObjectURL(String(piece.image));
+                    }
+                });
+                placeholders.forEach((p) => {
+                    if (String(p.image).startsWith("blob:")) {
+                        URL.revokeObjectURL(String(p.image));
+                    }
+                });
+
+                setOffset(result.offset);
+                setPuzzlePieces(result.pieces);
+                setGameInitialized(true);
+                setPlaceholders(result.placeholders);
+            };
+        }
+
+        return () => {};
+    }, [puzzlePieces, placeholders]);
 
     return (
         <>
@@ -659,7 +655,7 @@ const GameScreen = () => {
                                                     }}
                                                     animate={{
                                                         opacity: 1,
-                                                        height: "0.125rem",
+                                                        height: "0.062rem",
                                                     }}
                                                     exit={{
                                                         opacity: 0,
@@ -700,7 +696,7 @@ const GameScreen = () => {
                                                     }}
                                                     animate={{
                                                         opacity: 1,
-                                                        width: "0.125rem",
+                                                        width: "0.062rem",
                                                     }}
                                                     exit={{
                                                         opacity: 0,
@@ -737,7 +733,6 @@ const GameScreen = () => {
                     </DragOverlay>
                 </DndContext>
             )}
-            <canvas ref={canvasRef} className="hidden"></canvas>
             <audio
                 ref={dropSound}
                 preload="auto"

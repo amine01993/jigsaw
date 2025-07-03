@@ -12,5 +12,20 @@
     "FPS:": "FPS:",
     "Play time:": "Play time:",
     "Empty piece": "Empty piece",
-    "Play Sound": "Play Sound"
+    "Play Sound": "Play Sound",
+    "Drag and drop: ": "Drag and drop: ",
+    "Use drag & drop to position the pieces of the puzzle. On Touch screens, the dragged piece will show a bit higher for better visibility.": "Use drag & drop to position the pieces of the puzzle. On Touch screens, the dragged piece will show a bit higher for better visibility.",
+    "Keyboard: ": "Keyboard: ",
+    "Use Tab to switch between pieces. Use Space or Enter to select a piece and to place a piece. Use the arrow keys to move the pieces of the puzzle. Use Escape to deselect a piece.": "Use Tab to switch between pieces. Use Space or Enter to select a piece and to place a piece. Use the arrow keys to move the pieces of the puzzle. Use Escape to deselect a piece.",
+    "Pause: ": "Pause: ",
+    "Click on the timer or press P to pause the game. The timer is paused automatically when you open a modal, switch to another tab, or minimize the window.": "Click on the timer or press P to pause the game. The timer is paused automatically when you open a modal, switch to another tab, or minimize the window.",
+    "Shortcut keys: ": "Shortcut keys: ",
+    "Key": "Key",
+    "Description": "Description",
+    "Pause the game": "Pause the game",
+    "Open help": "Open help",
+    "Change the puzzle size": "Change the puzzle size",
+    "Open the settings": "Open the settings",
+    "Turn sound on/off": "Turn sound on/off",
+    "Close modal or unpause the game": "Close modal or unpause the game"
 }

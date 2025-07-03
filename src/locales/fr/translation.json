@@ -12,5 +12,20 @@
     "FPS:": "FPS :",
     "Play time:": "Temps de jeu :",
     "Empty piece": "Pièce vide",
-    "Play Sound": "Jouer le son"
+    "Play Sound": "Jouer le son",
+    "Drag and drop: ": "Glisser-déposer : ",
+    "Use drag & drop to position the pieces of the puzzle. On Touch screens, the dragged piece will show a bit higher for better visibility.": "Utilisez le glisser-déposer pour positionner les pièces du puzzle. Sur les écrans tactiles, la pièce déplacée apparaîtra un peu plus haut pour une meilleure visibilité.",
+    "Keyboard: ": "Clavier : ",
+    "Use Tab to switch between pieces. Use Space or Enter to select a piece and to place a piece. Use the arrow keys to move the selected piece. Use Escape to deselect a piece.": "Utilisez Tab pour passer d'une pièce à l'autre. Utilisez Espace ou Entrée pour sélectionner une pièce et la placer. Utilisez les flèches pour déplacer la pièce sélectionnée. Utilisez Échap pour désélectionner une pièce.",
+    "Pause: ": "Pause : ",
+    "Click on the timer or press P to pause the game. The timer is paused automatically when you open a modal, switch to another tab, or minimize the window.": "Cliquez sur le chronomètre ou appuyez sur P pour mettre le jeu en pause. Le chronomètre est automatiquement mis en pause lorsque vous ouvrez un modal, passez à un autre onglet ou minimisez la fenêtre.",
+    "Shortcut keys: ": "Touches de raccourci : ",
+    "Key": "Touche",
+    "Description": "Description",
+    "Pause the game": "Mettre le jeu en pause",
+    "Open help": "Ouvrir l'aide",
+    "Change the puzzle size": "Changer la taille du puzzle",
+    "Open the settings": "Ouvrir les paramètres",
+    "Turn sound on/off": "Activer/désactiver le son",
+    "Close modal or unpause the game": "Fermer le modal ou reprendre le jeu"
 }

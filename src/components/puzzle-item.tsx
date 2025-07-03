@@ -7,7 +7,7 @@ import { useGame } from "@/contexts/game";
 
 export interface PuzzlePiece {
     id: number;
-    imageUrl: string;
+    image: string | Blob;
     position: { x: number; y: number } | null;
     correctPosition: { x: number; y: number };
     outsidePosition: { x: number; y: number };
@@ -65,7 +65,7 @@ const PuzzleItem: React.FC<{
             <img
                 ref={setNodeRef}
                 className={imgClasses}
-                src={piece.imageUrl}
+                src={piece.image as string}
                 alt={`Piece Number (${oldCoords.x}, ${oldCoords.y})`}
                 {...listeners}
                 {...attributes}
