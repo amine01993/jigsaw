@@ -18,12 +18,7 @@ const PuzzleItem: React.FC<{
     index: number;
     itemSize: number;
     disabled: boolean;
-}> = ({
-    piece,
-    index,
-    itemSize,
-    disabled,
-}) => {
+}> = ({ piece, index, itemSize, disabled }) => {
     const {
         attributes,
         listeners,
@@ -56,22 +51,20 @@ const PuzzleItem: React.FC<{
         );
     }, [oldCoords, gridPadding, puzzleDims]);
 
+    const imgClasses = useMemo(() => {
+        return classNames("puzzle-item", "object-cover", {
+            "focus:outline-fuchsia-300 focus:outline-2 -outline-offset-2 transition-all duration-300":
+                !disabled,
+            "opacity-50": isDragging,
+            "ring ring-fuchsia-600/50": !isInTheGrid,
+        });
+    }, [disabled, isDragging, isInTheGrid]);
+
     return (
-        <div className={classNames("relative")}>
+        <div className="relative">
             <img
                 ref={setNodeRef}
-                className={classNames(
-                    "puzzle-item",
-                    "object-cover",
-                    {
-                        "focus:outline-fuchsia-300 focus:outline-2 -outline-offset-2 transition-all duration-300":
-                            !disabled,
-                    },
-                    {
-                        "opacity-50": isDragging,
-                        "ring ring-fuchsia-600/50": !isInTheGrid,
-                    }
-                )}
+                className={imgClasses}
                 src={piece.imageUrl}
                 alt={`Piece Number (${oldCoords.x}, ${oldCoords.y})`}
                 {...listeners}

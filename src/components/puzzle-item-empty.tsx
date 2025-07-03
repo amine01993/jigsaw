@@ -5,7 +5,7 @@ import { getCoordsFromIndex, isInsideTheGrid } from "@/helpers/helper";
 import { useGame } from "@/contexts/game";
 
 const PuzzleItemEmpty: React.FC<{
-    piece?: {x: number; y: number; imageUrl: string};
+    piece?: { x: number; y: number; imageUrl: string };
     index: number;
     itemSize: number;
 }> = ({ index, itemSize, piece }) => {
@@ -30,20 +30,24 @@ const PuzzleItemEmpty: React.FC<{
         );
     }, [oldCoords, gridPadding, puzzleDims]);
 
+    const emptyClasses = useMemo(() => {
+        return classNames(
+            "backdrop-blur-md transition-colors duration-300",
+            {
+                "bg-white/10": isInTheGrid && !isOver,
+                "bg-emerald-600/40": isOver,
+            },
+            "select-none"
+        );
+    }, [isInTheGrid, isOver]);
+
     return (
         <div
+            className={emptyClasses}
             ref={setNodeRef}
             aria-label="Empty piece"
             {...attributes}
             style={{ width: itemSize, height: itemSize }}
-            className={classNames(
-                "backdrop-blur-md transition-colors duration-300",
-                {
-                    "bg-white/10": isInTheGrid && isOver,
-                    "bg-emerald-600/40": isOver,
-                },
-                "select-none"
-            )}
             tabIndex={-1}
         >
             {piece && (

@@ -15,9 +15,11 @@ function App() {
     const [level, setLevel] = useState(0);
     const [started, setStarted] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
     const [puzzleItemsNumber, setPuzzleItemsNumber] = useState(9);
     const [openPuzzleItemsOptions, setOpenPuzzleItemsOptions] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
+    const [openHelp, setOpenHelp] = useState(false);
     const [openMobileMenu, setOpenMobileMenu] = useState(false);
     const [settings, setSettings] = useState<SettingType>({
         locale: "en",
@@ -79,16 +81,54 @@ function App() {
         setOpenMobileMenu(false);
     }, [level]);
 
-    useEffect(() => {
-        if (openSettings || openPuzzleItemsOptions) {
-            document.body.style.overflow = "hidden";
+    const handleVisibilityChange = useCallback(() => {
+        setIsVisible(document.visibilityState === "visible");
+    }, []);
+
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        console.log("Key pressed:", e.key);
+        if (e.key === "Escape") {
+            if (openSettings || openPuzzleItemsOptions || openHelp) {
+                setOpenSettings(false);
+                setOpenPuzzleItemsOptions(false);
+                setOpenHelp(false);
+            } else {
+                setIsPaused(false);
+            }
+        } else if (e.key === "P" || e.key === "p") {
             setIsPaused(true);
+        } else if (e.key === "H" || e.key === "h") {
+            setOpenHelp(true);
+        } else if (e.key === "D" || e.key === "d") {
+            setOpenPuzzleItemsOptions(true);
+        } else if (e.key === "S" || e.key === "s") {
+            setOpenSettings(true);
+        } else if (e.key === "M" || e.key === "m") {
+            setSettings((prev) => ({
+                ...prev,
+                playSound: !prev.playSound,
+            }));
+        }
+    }, [openSettings, openPuzzleItemsOptions, openHelp]);
+
+    useEffect(() => {
+        if (openSettings || openPuzzleItemsOptions || openHelp) {
+            document.body.style.overflow = "hidden";
             setOpenMobileMenu(false);
         } else {
             document.body.style.removeProperty("overflow");
-            setIsPaused(false);
         }
-    }, [openSettings, openPuzzleItemsOptions]);
+    }, [openSettings, openPuzzleItemsOptions, openHelp]);
+
+    useEffect(() => {
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [handleVisibilityChange, handleKeyDown]);
 
     return (
         <>
@@ -102,6 +142,8 @@ function App() {
                     setOpenPuzzleItemsOptions,
                     openSettings,
                     setOpenSettings,
+                    openHelp,
+                    setOpenHelp,
                     openMobileMenu,
                     setOpenMobileMenu,
                     settings,
@@ -118,6 +160,8 @@ function App() {
                     setStarted,
                     isPaused,
                     setIsPaused,
+                    isVisible,
+                    setIsVisible,
                     puzzleDims,
                     gridPadding,
                     gridDims,

@@ -22,6 +22,7 @@ const Header = () => {
         setSettings,
         setOpenSettings,
         setOpenPuzzleItemsOptions,
+        setOpenHelp,
         handleNextLevel,
     } = useGame();
 
@@ -35,6 +36,10 @@ const Header = () => {
 
     const handleOpenPuzzleOptions = useCallback(() => {
         setOpenPuzzleItemsOptions(true);
+    }, []);
+
+    const handleOpenHelp = useCallback(() => {
+        setOpenHelp(true);
     }, []);
 
     const handlePlaySoundChange = useCallback(() => {
@@ -103,6 +108,7 @@ const Header = () => {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                         className="gap-3 items-center cursor-pointer hidden md:flex"
+                        onClick={handleOpenHelp}
                     >
                         <span className="hidden lg:inline-block text-md">
                             {t("Help")}
@@ -203,6 +209,7 @@ const Header = () => {
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.95 }}
                             className="flex gap-3 items-center cursor-pointer max-w-fit relative py-2"
+                            onClick={handleOpenHelp}
                         >
                             <span className="text-md">
                                 {t("Help")}

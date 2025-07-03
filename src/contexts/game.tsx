@@ -26,6 +26,8 @@ type GameContextType = {
     setSettings: Dispatch<React.SetStateAction<SettingType>>;
     openSettings: boolean;
     setOpenSettings: Dispatch<React.SetStateAction<boolean>>;
+    openHelp: boolean;
+    setOpenHelp: Dispatch<React.SetStateAction<boolean>>;
     openMobileMenu: boolean;
     setOpenMobileMenu: Dispatch<React.SetStateAction<boolean>>;
     settings: SettingType;
@@ -41,6 +43,8 @@ type GameContextType = {
     setStarted: Dispatch<React.SetStateAction<boolean>>;
     isPaused: boolean;
     setIsPaused: Dispatch<React.SetStateAction<boolean>>;
+    isVisible: boolean;
+    setIsVisible: Dispatch<React.SetStateAction<boolean>>;
     puzzleDims: { cols: number; rows: number };
     gridPadding: { x: number; y: number };
     gridDims: { cols: number; rows: number };
