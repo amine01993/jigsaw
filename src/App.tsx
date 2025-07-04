@@ -4,6 +4,7 @@ import {
     GameContext,
     type OffsetType,
     type SettingType,
+    type ThemeType,
 } from "@/contexts/game";
 import { getGridDims, getGridPadding, getPuzzleDims } from "@/helpers/helper";
 import Game from "@/components/game";
@@ -12,7 +13,13 @@ import type { PuzzlePlaceholder } from "./components/puzzle-item-empty";
 import ANIME_IMAGES from "@/data/images.json";
 import "./App.css";
 
+const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
 function App() {
+    const [systemTheme, setSystemTheme] = useState<ThemeType>(
+        mediaQuery.matches ? "dark" : "light"
+    );
+    const [theme, setTheme] = useState<ThemeType>("system");
     const [level, setLevel] = useState(0);
     const [started, setStarted] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
@@ -25,7 +32,7 @@ function App() {
     const [settings, setSettings] = useState<SettingType>({
         locale: "en",
         showTimer: true,
-        showFps: true,
+        showFps: false,
         showHints: true,
         playSound: true,
     });
@@ -41,6 +48,13 @@ function App() {
         right: 0,
     });
     const [placeholders, setPlaceholders] = useState<PuzzlePlaceholder[]>([]);
+
+    const userTheme = useMemo(() => {
+        if (theme === "system") {
+            return systemTheme;
+        }
+        return theme;
+    }, [theme, systemTheme]);
 
     const puzzleDims = useMemo(() => {
         return getPuzzleDims(puzzleItemsNumber);
@@ -112,6 +126,14 @@ function App() {
         [openSettings, openPuzzleItemsOptions, openHelp]
     );
 
+    const handleThemeChange = useCallback((event: MediaQueryListEvent) => {
+        if (event.matches) {
+            setSystemTheme("dark");
+        } else {
+            setSystemTheme("light");
+        }
+    }, []);
+
     useEffect(() => {
         if (openSettings || openPuzzleItemsOptions || openHelp) {
             document.body.style.overflow = "hidden";
@@ -134,10 +156,27 @@ function App() {
         };
     }, [handleVisibilityChange, handleKeyDown]);
 
+    useEffect(() => {
+        if (userTheme === "dark") {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
+    }, [userTheme]);
+
+    useEffect(() => {
+        mediaQuery.addEventListener("change", handleThemeChange);
+        return () => {
+            mediaQuery.removeEventListener("change", handleThemeChange);
+        };
+    }, []);
+
     return (
         <>
             <GameContext.Provider
                 value={{
+                    theme,
+                    setTheme,
                     level,
                     setLevel,
                     puzzleItemsNumber,
@@ -166,12 +205,13 @@ function App() {
                     setIsPaused,
                     isVisible,
                     setIsVisible,
+                    placeholders,
+                    setPlaceholders,
                     puzzleDims,
                     gridPadding,
                     gridDims,
                     isGameComplete,
-                    placeholders,
-                    setPlaceholders,
+                    userTheme,
                     handleNextLevel,
                 }}
             >

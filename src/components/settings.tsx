@@ -53,20 +53,20 @@ const Settings = () => {
 
     return (
         <Modal isOpen={openSettings} onClose={handleClose}>
-            <h2 className="text-[#FFD6C1] text-2xl font-bold sm:text-center">
+            <h2 className="text-[#072083] dark:text-[#FFD6C1] text-2xl font-bold sm:text-center">
                 {t("Settings")}
             </h2>
 
             <div className="flex flex-col gap-10 mt-10">
-                <div className="text-[#FFD6C1] flex">
+                <div className="text-[#072083] dark:text-[#FFD6C1] flex">
                     <button
                         data-locale="en"
                         onClick={handleLocaleChange}
                         className={classNames(
                             `h-12 ring cursor-pointer flex-1 transition-colors duration-300 relative rounded-bl-md rounded-tl-md`,
                             {
-                                "ring-[#b33b00]": settings.locale === "en",
-                                "ring-[#FFD6C1]/30 hover:bg-[#FFD6C1]/30":
+                                "ring-[#ade8f4] dark:ring-[#b33b00]": settings.locale === "en",
+                                "ring-[#ade8f4]/30 hover:bg-[#ade8f4]/30 dark:ring-[#FFD6C1]/30 dark:hover:bg-[#FFD6C1]/30":
                                     settings.locale !== "en",
                             }
                         )}
@@ -80,7 +80,7 @@ const Settings = () => {
                                     borderTopRightRadius: 0,
                                 }}
                                 layoutId="locale-indicator"
-                                className="absolute inset-0 bg-[#b33b00] z-1"
+                                className="absolute inset-0 bg-[#ade8f4] dark:bg-[#b33b00] z-1"
                             />
                         )}
                         <span className="absolute inset-0 flex items-center justify-center z-2">
@@ -93,8 +93,8 @@ const Settings = () => {
                         className={classNames(
                             `h-12 ring cursor-pointer flex-1 transition-colors duration-300 relative rounded-br-md rounded-tr-md`,
                             {
-                                "ring-[#b33b00]": settings.locale === "fr",
-                                "ring-[#FFD6C1]/30 hover:bg-[#FFD6C1]/30":
+                                "ring-[#ade8f4] dark:ring-[#b33b00]": settings.locale === "fr",
+                                "ring-[#ade8f4]/30 hover:bg-[#ade8f4]/30 dark:ring-[#FFD6C1]/30 dark:hover:bg-[#FFD6C1]/30":
                                     settings.locale !== "fr",
                             }
                         )}
@@ -108,7 +108,7 @@ const Settings = () => {
                                     borderTopRightRadius: 6,
                                 }}
                                 layoutId="locale-indicator"
-                                className="absolute inset-0 bg-[#b33b00] z-1"
+                                className="absolute inset-0 bg-[#ade8f4] dark:bg-[#b33b00] z-1"
                             />
                         )}
                         <span className="absolute inset-0 flex items-center justify-center z-2">
@@ -117,7 +117,7 @@ const Settings = () => {
                     </button>
                 </div>
 
-                <div className="text-[#FFD6C1] grid grid-cols-[200px_1fr] gap-x-4 gap-y-10 items-center">
+                <div className="text-[#072083] dark:text-[#FFD6C1] grid grid-cols-[200px_1fr] gap-x-4 gap-y-10 items-center">
                     <label htmlFor="show-timer">{t("Show Timer")}</label>
                     <InputSwitch
                         name="show-timer"

@@ -62,6 +62,8 @@ const GameScreen = () => {
         puzzlePieces,
         settings,
         placeholders,
+        started,
+        setIsPaused,
         setPuzzlePieces,
         setGameInitialized,
         setIsLoading,
@@ -155,8 +157,11 @@ const GameScreen = () => {
     const handleDragStart = useCallback((event: DragStartEvent) => {
         setActiveId(String(event.active.id));
 
-        setStarted(true);
-    }, []);
+        if(!started) {
+            setStarted(true);
+            setIsPaused(false);
+        }
+    }, [started]);
 
     const handleDragEnd = useCallback(
         (event: DragEndEvent) => {
@@ -377,7 +382,8 @@ const GameScreen = () => {
     const getImageUrl = useCallback(async () => {
         try {
             const imageItem = ANIME_IMAGES[level];
-            const imageModule = await import(imageItem.src);
+
+            const imageModule = await import(/* @vite-ignore */ imageItem.src);
             return imageModule.default;
         } catch (error) {
             console.error("Error fetching image:", error);
@@ -555,7 +561,7 @@ const GameScreen = () => {
                         width: `${itemSize * gridDims.cols}px`,
                         height: `${itemSize * gridDims.rows}px`,
                     }}
-                    className="absolute left-1/2 top-[calc(50%+1.5rem)] -translate-1/2 justify-center bg-[#FFD6C1]"
+                    className="absolute left-1/2 top-[calc(50%+1.5rem)] -translate-1/2 justify-center bg-[#072083] dark:bg-[#FFD6C1]"
                 >
                     <Loading text={loadingText} />
                 </motion.div>

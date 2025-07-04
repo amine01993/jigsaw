@@ -34,7 +34,7 @@ const InputSwitch = ({ name, value, onChange }: InputSwitchProps) => {
             />
             <button
                 className={classNames(
-                    "flex items-center w-20 h-10 p-1.5 rounded-2xl bg-[#FFD6C1] hover:bg-[#ffbb99] transition-colors duration-300 cursor-pointer",
+                    "flex items-center w-20 h-10 p-1.5 rounded-2xl bg-[#ade8f4] hover:bg-[#90e0ef] dark:bg-[#FFD6C1] dark:hover:bg-[#ffbb99] transition-colors duration-300 cursor-pointer",
                     {
                         "justify-start": isOn,
                         "justify-end": !isOn,
@@ -46,7 +46,7 @@ const InputSwitch = ({ name, value, onChange }: InputSwitchProps) => {
                     className={classNames(
                         "size-7 rounded-[calc(var(--radius-2xl)-(var(--spacing)*1.5))] shadow-md transition-colors duration-300",
                         {
-                            "bg-[#b33b00]": isOn,
+                            "bg-[#072083] dark:bg-[#b33b00]": isOn,
                             "bg-white": !isOn,
                         }
                     )}

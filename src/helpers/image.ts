@@ -30,7 +30,7 @@ export function htmlImageToImageData(
 ): ImageData | null {
     canvas.width = image.width;
     canvas.height = image.height;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", {willReadFrequently: true});
     if (!ctx) {
         alert("Failed to get canvas context!");
         return null;

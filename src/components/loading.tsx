@@ -1,3 +1,4 @@
+import { useGame } from "@/contexts/game";
 import { AnimatePresence, motion } from "motion/react";
 
 interface LoadingProps {
@@ -5,6 +6,8 @@ interface LoadingProps {
 }
 
 const Loading = ({ text }: LoadingProps) => {
+    const { userTheme } = useGame();
+
     return (
         <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center gap-5">
             <motion.svg width="192" height="161" viewBox="0 0 192 161">
@@ -14,8 +17,8 @@ const Loading = ({ text }: LoadingProps) => {
             c-0.5,23.2-17,16.8-28.8,13.7c-2.2-0.6-4.6,0.7-5.2,2.9c-4.3,13.9-3.6,26,1.9,42.7c-17.9,4.8-43.8,6.3-47.7,0
             c9.2-20,3-32.2-13.1-32.5c-17,2.1-24.1,8.9-12.5,35.2c-22.4,2.4-25.6,1.8-45.9-2.4c6.2-17.9,4.7-29.3,1.3-36.1
             c-1.9-3.9-1.8-4.5-6.7-2.5c-23,9.6-31.6,0.7-31.6-15.1c1.5-13.7,11-19.1,33.7-11.3C42.9,86.5,35.8,38.2,35.8,38.2z"
-                    stroke="#ff5500"
-                    fill="#FFD6C1"
+                    stroke={userTheme === "dark" ? "#b33b00" : "#caf0f8"}
+                    fill="none"
                     strokeWidth="3"
                     initial={{
                         pathLength: 0,
@@ -38,7 +41,7 @@ const Loading = ({ text }: LoadingProps) => {
                         initial={{ opacity: 0, x: -40 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 40 }}
-                        className="text-[#b33b00]"
+                        className="text-[#caf0f8] dark:text-[#b33b00] transition-colors duration-300"
                     >
                         {text}
                     </motion.p>

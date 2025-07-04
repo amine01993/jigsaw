@@ -5,6 +5,23 @@ import classNames from "classnames";
 import { useGame } from "@/contexts/game";
 import Modal from "@/components/utilities/modal";
 
+const options = [
+    { number: 9, label: "3x3" },
+    { number: 16, label: "4x4" },
+    { number: 25, label: "5x5" },
+    { number: 36, label: "6x6" },
+    { number: 49, label: "7x7" },
+    { number: 64, label: "8x8" },
+    { number: 81, label: "9x9" },
+    { number: 100, label: "10x10" },
+    { number: 121, label: "11x11" },
+    { number: 144, label: "12x12" },
+    { number: 169, label: "13x13" },
+    { number: 196, label: "14x14" },
+    { number: 225, label: "15x15" },
+    { number: 256, label: "16x16" },
+];
+
 const PuzzleItemsOptions = () => {
     const { t } = useTranslation();
     const {
@@ -16,23 +33,6 @@ const PuzzleItemsOptions = () => {
     } = useGame();
     const optionTimeout = useRef<NodeJS.Timeout | null>(null);
     const [puzzleOption, setPuzzleOption] = useState(puzzleItemsNumber);
-
-    const options = useRef([
-        { number: 9, label: "3x3" },
-        { number: 16, label: "4x4" },
-        { number: 25, label: "5x5" },
-        { number: 36, label: "6x6" },
-        { number: 49, label: "7x7" },
-        { number: 64, label: "8x8" },
-        { number: 81, label: "9x9" },
-        { number: 100, label: "10x10" },
-        { number: 121, label: "11x11" },
-        { number: 144, label: "12x12" },
-        { number: 169, label: "13x13" },
-        { number: 196, label: "14x14" },
-        { number: 225, label: "15x15" },
-        { number: 256, label: "16x16" },
-    ]);
 
     const handleClose = useCallback(() => {
         setOpenPuzzleItemsOptions(false);
@@ -60,14 +60,14 @@ const PuzzleItemsOptions = () => {
 
     return (
         <Modal isOpen={openPuzzleItemsOptions} onClose={handleClose}>
-            <h2 className="text-[#FFD6C1] text-2xl font-bold sm:text-center">
+            <h2 className="text-[#072083] dark:text-[#FFD6C1] text-2xl font-bold sm:text-center">
                 {t("Puzzle Size")}
             </h2>
 
-            <div className="text-[#FFD6C1] grid grid-cols-3 mt-10">
-                {options.current.map((option, index) => {
+            <div className="text-[#072083] dark:text-[#FFD6C1] grid grid-cols-3 mt-10">
+                {options.map((option, index) => {
                     const firstRow = index < 3;
-                    const lastRow = index >= options.current.length - 3;
+                    const lastRow = index >= options.length - 3;
                     const firstColumn = index % 3 === 0;
                     const lastColumn = index % 3 === 2;
 
@@ -85,9 +85,9 @@ const PuzzleItemsOptions = () => {
                                     "rounded-br-md": lastRow && lastColumn,
                                 },
                                 {
-                                    "ring-[#b33b00]":
+                                    "ring-[#ade8f4] dark:ring-[#b33b00]":
                                         puzzleOption === option.number,
-                                    "ring-[#FFD6C1]/30 hover:bg-[#FFD6C1]/30":
+                                    "ring-[#ade8f4]/30 hover:bg-[#ade8f4]/30 dark:ring-[#FFD6C1]/30 dark:hover:bg-[#FFD6C1]/30":
                                         puzzleOption !== option.number,
                                 }
                             )}
@@ -105,7 +105,7 @@ const PuzzleItemsOptions = () => {
                                             firstRow && lastColumn ? 6 : 0,
                                     }}
                                     layoutId="puzzle-items-indicator"
-                                    className="absolute inset-0 bg-[#b33b00] z-1"
+                                    className="absolute inset-0 bg-[#ade8f4] dark:bg-[#b33b00] z-1"
                                 />
                             )}
                             <span className="absolute inset-0 flex items-center justify-center z-2">
