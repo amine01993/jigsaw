@@ -2,42 +2,42 @@
 [
     {
         "title": "Futuristic City",
-        "src": "../assets/images/Futuristic-city.webp"
+        "src": "./images/Futuristic-city.webp"
     },
     {
         "title": "Outer space",
-        "src": "../assets/images/Outer-space.webp"
+        "src": "./images/Outer-space.webp"
     },
     {
         "title": "High school classroom",
-        "src": "../assets/images/High-school-classroom.webp"
+        "src": "./images/High-school-classroom.webp"
     },
     {
         "title": "Fruits in a basket",
-        "src": "../assets/images/Fruits-in-a-basket.webp"
+        "src": "./images/Fruits-in-a-basket.webp"
     },
     {
         "title": "Close-up of grapefruit",
-        "src": "../assets/images/Close-Up-of-Grapefruit.webp"
+        "src": "./images/Close-Up-of-Grapefruit.webp"
     },
     {
         "title": "Beach chairs and cap",
-        "src": "../assets/images/Beach-Chairs-and-Cap.webp"
+        "src": "./images/Beach-Chairs-and-Cap.webp"
     },
     {
         "title": "Camels in a desert",
-        "src": "../assets/images/camels-in-a-desert.webp"
+        "src": "./images/camels-in-a-desert.webp"
     },
     {
         "title": "rabbit and turtle race",
-        "src": "../assets/images/rabbit-turtle-race.webp"
+        "src": "./images/rabbit-turtle-race.webp"
     },
     {
         "title": "The solar system",
-        "src": "../assets/images/Solar-System.webp"
+        "src": "./images/Solar-System.webp"
     },
     {
         "title": "Seashell Collection",
-        "src": "../assets/images/Seashell-Collection.webp"
+        "src": "./images/Seashell-Collection.webp"
     }
 ]

@@ -57,22 +57,22 @@ const Header = () => {
             <header className="flex justify-between items-center px-4 h-12 bg-black/10 dark:bg-white/10 backdrop-blur-sm transition-colors duration-300">
                 <div className="">
                     <img
-                        src="/logo.svg"
+                        src="./logo.svg"
                         alt="Jigsaw Puzzle Logo"
                         className="h-10 hidden dark:md:inline-block"
                     />
                     <img
-                        src="/logo-2.svg"
+                        src="./logo-2.svg"
                         alt="Jigsaw Puzzle Logo"
                         className="h-10 hidden md:inline-block dark:hidden"
                     />
                     <img
-                        src="/mlogo.svg"
+                        src="./mlogo.svg"
                         alt="Jigsaw Puzzle Logo"
                         className="h-10 md:hidden hidden dark:inline-block dark:md:hidden"
                     />
                     <img
-                        src="/mlogo-2.svg"
+                        src="./mlogo-2.svg"
                         alt="Jigsaw Puzzle Logo"
                         className="h-10 md:hidden dark:hidden"
                     />

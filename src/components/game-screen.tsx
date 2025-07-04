@@ -154,14 +154,17 @@ const GameScreen = () => {
         []
     );
 
-    const handleDragStart = useCallback((event: DragStartEvent) => {
-        setActiveId(String(event.active.id));
+    const handleDragStart = useCallback(
+        (event: DragStartEvent) => {
+            setActiveId(String(event.active.id));
 
-        if(!started) {
-            setStarted(true);
-            setIsPaused(false);
-        }
-    }, [started]);
+            if (!started) {
+                setStarted(true);
+                setIsPaused(false);
+            }
+        },
+        [started]
+    );
 
     const handleDragEnd = useCallback(
         (event: DragEndEvent) => {
@@ -380,15 +383,8 @@ const GameScreen = () => {
     );
 
     const getImageUrl = useCallback(async () => {
-        try {
-            const imageItem = ANIME_IMAGES[level];
-
-            const imageModule = await import(/* @vite-ignore */ imageItem.src);
-            return imageModule.default;
-        } catch (error) {
-            console.error("Error fetching image:", error);
-            return "";
-        }
+        const imageItem = ANIME_IMAGES[level];
+        return imageItem.src;
     }, [level]);
 
     // Generate puzzle pieces
@@ -742,7 +738,7 @@ const GameScreen = () => {
             <audio
                 ref={dropSound}
                 preload="auto"
-                src="/sounds/card-place-1.ogg"
+                src="./sounds/card-place-1.ogg"
             />
             <CongratsAnimation itemSize={itemSize} />
         </>

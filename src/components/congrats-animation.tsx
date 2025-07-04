@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useRef } from "react";
-import { useGame } from "@/contexts/game";
 import classNames from "classnames";
+import { useGame } from "@/contexts/game";
 
 interface CongratsAnimationProps {
     itemSize: number;
@@ -82,13 +82,12 @@ const CongratsAnimation = ({ itemSize }: CongratsAnimationProps) => {
             <canvas
                 ref={congratsCanvas}
                 width={gridDims.cols * itemSize}
-                height={gridDims.rows * itemSize}
                 className={classNames(
-                    "absolute top-12 left-1/2 -translate-x-1/2 pointer-events-none",
+                    "absolute top-12 left-1/2 -translate-x-1/2 pointer-events-none h-[calc(100vh-48px)]",
                     { "hidden": !isGameComplete }
                 )}
             />
-            <audio ref={levelUpSound} src="/sounds/chipquest.wav" preload="auto" />
+            <audio ref={levelUpSound} src="./sounds/chipquest.wav" preload="auto" />
         </>
     );
 };
