@@ -1,5 +1,6 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { useParams } from "react-router";
 import {
     GiAbstract050,
     GiFastForwardButton,
@@ -10,11 +11,15 @@ import {
 } from "react-icons/gi";
 import { useTranslation } from "react-i18next";
 import { useGame } from "@/contexts/game";
-import GameInfo from "@/components/game-info";
-import ThemeToggle from "./utilities/theme-toggle";
+import ThemeToggle from "../utilities/theme-toggle";
+import GameInfo from "./game-info";
+import ANIME_IMAGES from "@/data/images.json";
+import classNames from "classnames";
+import { MotionLink } from "@/App";
 
 const Header = () => {
     const { t } = useTranslation();
+    const { gameId } = useParams();
     const {
         isGameComplete,
         settings,
@@ -24,8 +29,22 @@ const Header = () => {
         setOpenSettings,
         setOpenPuzzleItemsOptions,
         setOpenHelp,
-        handleNextLevel,
+        // handleNextPuzzle,
     } = useGame();
+
+    const nextPuzzlePath = useMemo(() => {
+        let currentPuzzleIndex = 0;
+        if (gameId) {
+            currentPuzzleIndex = ANIME_IMAGES.findIndex(
+                (item) => item.gameId === gameId
+            );
+            if (currentPuzzleIndex === -1) {
+                currentPuzzleIndex = 0;
+            }
+        }
+        const nextPuzzleIndex = (currentPuzzleIndex + 1) % ANIME_IMAGES.length;
+        return `/game/${ANIME_IMAGES[nextPuzzleIndex].gameId}`;
+    }, [gameId]);
 
     const toggleMobileMenu = useCallback(() => {
         setOpenMobileMenu((prev) => !prev);
@@ -55,28 +74,30 @@ const Header = () => {
     return (
         <>
             <header className="flex justify-between items-center px-4 h-12 bg-black/10 dark:bg-white/10 backdrop-blur-sm transition-colors duration-300">
-                <div className="">
+                <MotionLink
+                    to="/"
+                >
                     <img
-                        src="./logo.svg"
+                        src="/logo.svg"
                         alt="Jigsaw Puzzle Logo"
                         className="h-10 hidden dark:md:inline-block"
                     />
                     <img
-                        src="./logo-2.svg"
+                        src="/logo-2.svg"
                         alt="Jigsaw Puzzle Logo"
                         className="h-10 hidden md:inline-block dark:hidden"
                     />
                     <img
-                        src="./mlogo.svg"
+                        src="/mlogo.svg"
                         alt="Jigsaw Puzzle Logo"
                         className="h-10 md:hidden hidden dark:inline-block dark:md:hidden"
                     />
                     <img
-                        src="./mlogo-2.svg"
+                        src="/mlogo-2.svg"
                         alt="Jigsaw Puzzle Logo"
                         className="h-10 md:hidden dark:hidden"
                     />
-                </div>
+                </MotionLink>
 
                 <GameInfo />
 
@@ -87,30 +108,32 @@ const Header = () => {
                         className="gap-3 items-center cursor-pointer hidden md:flex p-2"
                         onClick={handleOpenPuzzleOptions}
                     >
-                        <span className="hidden lg:inline-block text-md">
+                        <span className="hidden custom-lg:inline-block text-md">
                             {t("Puzzle Size")}
                         </span>
                         <GiAbstract050 size={25} />
                     </motion.button>
-                    <motion.button
+                    <MotionLink
                         whileHover={{ scale: isGameComplete ? 1.1 : 1 }}
                         whileTap={{ scale: isGameComplete ? 0.95 : 1 }}
-                        className="gap-3 items-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 hidden md:flex p-2"
-                        onClick={handleNextLevel}
-                        disabled={!isGameComplete}
+                        className={classNames(
+                            "gap-3 items-center hidden md:flex p-2",
+                            { "cursor-not-allowed opacity-50": !isGameComplete }
+                        )}
+                        to={nextPuzzlePath}
                     >
-                        <span className="hidden lg:inline-block text-md">
+                        <span className="hidden custom-lg:inline-block text-md">
                             {t("Next Puzzle")}
                         </span>
                         <GiFastForwardButton size={25} />
-                    </motion.button>
+                    </MotionLink>
                     <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                         className="gap-3 items-center cursor-pointer hidden md:flex p-2"
                         onClick={handleOpenSettings}
                     >
-                        <span className="hidden lg:inline-block text-md">
+                        <span className="hidden custom-lg:inline-block text-md">
                             {t("Settings")}
                         </span>
                         <GiGears size={25} />
@@ -121,7 +144,7 @@ const Header = () => {
                         className="gap-3 items-center cursor-pointer hidden md:flex p-2"
                         onClick={handleOpenHelp}
                     >
-                        <span className="hidden lg:inline-block text-md">
+                        <span className="hidden custom-lg:inline-block text-md">
                             {t("Help")}
                         </span>
                         <GiHelp size={25} />
@@ -132,7 +155,7 @@ const Header = () => {
                         className="gap-3 items-center cursor-pointer hidden md:flex p-2"
                         onClick={handlePlaySoundChange}
                     >
-                        <span className="hidden lg:inline-block text-md">
+                        <span className="hidden custom-lg:inline-block text-md">
                             {t("Sound")}
                         </span>
                         {settings.playSound && <GiSoundOn size={25} />}
@@ -191,17 +214,22 @@ const Header = () => {
                             <GiAbstract050 size={25} />
                             <span className="absolute inset-0 w-[calc(100vw-4rem)]" />
                         </motion.button>
-                        <motion.button
+                        <MotionLink
                             whileHover={{ scale: isGameComplete ? 1.1 : 1 }}
                             whileTap={{ scale: isGameComplete ? 0.95 : 1 }}
-                            className="flex gap-3 items-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 max-w-fit relative py-2"
-                            onClick={handleNextLevel}
-                            disabled={!isGameComplete}
+                            className={classNames(
+                                "flex gap-3 items-center max-w-fit relative py-2",
+                                {
+                                    "cursor-not-allowed opacity-50":
+                                        !isGameComplete,
+                                }
+                            )}
+                            to={nextPuzzlePath}
                         >
                             <span className="text-md">{t("Next Puzzle")}</span>
                             <GiFastForwardButton size={25} />
                             <span className="absolute inset-0 w-[calc(100vw-4rem)]" />
-                        </motion.button>
+                        </MotionLink>
                         <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.95 }}

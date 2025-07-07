@@ -1,4 +1,4 @@
-import { duplicateArray, getRange, mapRange, rotateRight } from "@/helpers/gallery";
+import { useMemo, memo } from "react";
 import {
     cubicBezier,
     motion,
@@ -6,11 +6,18 @@ import {
     useScroll,
     useTransform,
 } from "motion/react";
-import { useMemo, memo } from "react";
+import {
+    duplicateArray,
+    getRange,
+    mapRange,
+    rotateRight,
+} from "@/helpers/gallery";
+import { MotionLink } from "@/App";
 
 interface GalleryItemProps {
     index: number;
     item: {
+        id: string;
         url: string;
         title: string;
         coords: { x: number; y: number };
@@ -23,7 +30,10 @@ const initialTranslateZArray = mapRange(
     duplicateArray([0.95, 1, 0, 0, 0, 0, 0, 0.05, 0.35, 0.7], 10),
     [-700, 80]
 );
-const initialOpacityArray = duplicateArray([0.95, 0, 0, 0, 0, 0, 1, 1, 1, 0.95], 10);
+const initialOpacityArray = duplicateArray(
+    [0.95, 0, 0, 0, 0, 0, 1, 1, 1, 0.95],
+    10
+);
 
 const GalleryItem = ({ item, index }: GalleryItemProps) => {
     const { scrollYProgress } = useScroll();
@@ -43,20 +53,28 @@ const GalleryItem = ({ item, index }: GalleryItemProps) => {
         }
     );
     const transform = useMotionTemplate`translate3d(calc(${item.coords.x}vw - 50%), calc(${item.coords.y}vh - 50%), ${translateZ}px)`;
+    const zIndex = useTransform(() => {
+        return opacity.get() > 0.2 ? translateZ.get() : -1000;
+    });
 
     return (
-        <motion.img
-            key={item.url}
-            src={item.url}
-            title={item.title}
-            className="w-[300px] absolute z-0"
+        <MotionLink
+            to={`/game/${item.id}`}
+            className="w-[300px] absolute z-0 p-4 rounded-md bg-white border-2 border-offset-2 border-gray-900"
+            whileHover={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)" }}
             style={{
                 opacity,
                 transform,
-                zIndex: translateZ,
+                zIndex,
                 width: `${item.width}vw`,
             }}
-        />
+        >
+            <motion.img
+                src={item.url}
+                title={item.title}
+                className="object-cover w-full h-full"
+            />
+        </MotionLink>
     );
 };
 

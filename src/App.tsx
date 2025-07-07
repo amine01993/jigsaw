@@ -1,18 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Outlet, Link } from "react-router";
+import { motion } from "motion/react";
 import {
     AppContext,
     type ThemeType,
 } from "@/contexts/app";
-import Game from "@/components/game";
 import "./App.css";
-import Gallery from "./components/gallery";
 
+export const MotionLink = motion.create(Link);
 const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
-type Page = "home" | "game";
-
 function App() {
-    const [page, setPage] = useState<Page>("home");
     const [systemTheme, setSystemTheme] = useState<ThemeType>(
         mediaQuery.matches ? "dark" : "light"
     );
@@ -55,12 +53,7 @@ function App() {
                 setTheme,
                 userTheme,
             }}>
-            {page === "home" && (
-                <Gallery />
-            )}
-            {page === "game" && (
-                <Game />
-            )}
+            <Outlet />
         </AppContext.Provider>
     );
 }

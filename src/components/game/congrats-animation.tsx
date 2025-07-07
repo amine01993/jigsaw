@@ -51,12 +51,14 @@ const CongratsAnimation = ({ itemSize }: CongratsAnimationProps) => {
 
     useEffect(() => {
         if (isGameComplete) {
+            console.log("Game complete! Starting confetti animation...", gridDims.cols, itemSize, gridDims.cols * itemSize);
             const canvas = congratsCanvas.current;
             if (canvas) {
                 ctx.current = canvas.getContext("2d");
                 if (ctx.current) {
                     // Start the confetti animation
                     isAnimating.current = true;
+                    console.log("Canvas dimensions:", canvas.width, canvas.height);
                     initParticles();
                     startAnimation();
                     if(levelUpSound.current && settings.playSound) {
@@ -82,12 +84,13 @@ const CongratsAnimation = ({ itemSize }: CongratsAnimationProps) => {
             <canvas
                 ref={congratsCanvas}
                 width={gridDims.cols * itemSize}
+                height={window.innerHeight - 48}
                 className={classNames(
-                    "absolute top-12 left-1/2 -translate-x-1/2 pointer-events-none h-[calc(100vh-48px)]",
+                    "absolute top-12 left-1/2 -translate-x-1/2 pointer-events-none",
                     { "hidden": !isGameComplete }
                 )}
             />
-            <audio ref={levelUpSound} src="./sounds/chipquest.wav" preload="auto" />
+            <audio ref={levelUpSound} src="/sounds/chipquest.wav" preload="auto" />
         </>
     );
 };
@@ -116,6 +119,7 @@ class ConfettiPiece {
         this.rotationSpeed = (Math.random() - 0.5) * 10;
         this.size = Math.random() * 8 + 4;
         this.gravity = 0.1;
+        console.log("Confetti piece initialized at:", this.x, this.y, "with size:", this.size);
     }
 
     getRandomColor() {

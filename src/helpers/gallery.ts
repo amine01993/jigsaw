@@ -40,16 +40,16 @@ export function getRandomCoords(
     return { x, y };
 }
 
-export function rotateRight(list: any[], n: number) {
-    const newList = Array.from({ length: list.length });
+export function rotateRight<T>(list: T[], n: number): T[] {
+    const newList = Array.from<T>({ length: list.length });
     for (let i = 0; i < list.length; i++) {
         newList[(i + n) % list.length] = list[i];
     }
     return newList;
 }
 
-export function rotateLeft(list: any[], n: number) {
-    const newList = Array.from({ length: list.length });
+export function rotateLeft<T>(list: T[], n: number): T[] {
+    const newList = Array.from<T>({ length: list.length });
     for (let i = 0; i < list.length; i++) {
         newList[(i - n + list.length) % list.length] = list[i];
     }

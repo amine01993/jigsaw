@@ -1,4 +1,4 @@
-import type { PuzzlePiece } from "@/components/puzzle-item";
+import type { PuzzlePiece } from "@/components/game/puzzle-item";
 import {
     getGridDims,
     getGridPadding,

@@ -1,4 +1,4 @@
-import type { PuzzlePiece } from "@/components/puzzle-item";
+import type { PuzzlePiece } from "@/components/game/puzzle-item";
 import type { OffsetType } from "@/contexts/game";
 
 export function getOffsetAndOutsidePositions(rows: number, cols: number) {

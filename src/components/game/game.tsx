@@ -1,10 +1,10 @@
 import { MotionConfig } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Header from "@/components/header";
-import GameScreen from "@/components/game-screen";
-import Settings from "@/components/settings";
-import PuzzleItemsOptions from "@/components/puzzle-items-options";
-import Help from "@/components/help";
+import Header from "@/components/game/header";
+import GameScreen from "@/components/game/game-screen";
+import Settings from "@/components/game/settings";
+import PuzzleItemsOptions from "@/components/game/puzzle-items-options";
+import Help from "@/components/game/help";
 import {
     GameContext,
     type OffsetType,
@@ -12,11 +12,11 @@ import {
 } from "@/contexts/game";
 import type { PuzzlePlaceholder } from "./puzzle-item-empty";
 import type { PuzzlePiece } from "./puzzle-item";
-import ANIME_IMAGES from "@/data/images.json";
 import { getGridDims, getGridPadding, getPuzzleDims } from "@/helpers/helper";
+import { useParams } from "react-router";
 
 const Game = () => {
-    const [level, setLevel] = useState(0);
+    const { gameId } = useParams();
     const [started, setStarted] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
@@ -74,14 +74,14 @@ const Game = () => {
         return false;
     }, [puzzlePieces]);
 
-    // Pass to the next level
-    const handleNextLevel = useCallback(() => {
-        setLevel((level + 1) % ANIME_IMAGES.length);
-        setGameInitialized(false);
-        setStarted(false);
-        setIsPaused(false);
-        setOpenMobileMenu(false);
-    }, [level]);
+    // Pass to the next puzzle
+    // const handleNextPuzzle = useCallback(() => {
+    //     setPuzzleIndex((puzzleIndex + 1) % ANIME_IMAGES.length);
+    //     setGameInitialized(false);
+    //     setStarted(false);
+    //     setIsPaused(false);
+    //     setOpenMobileMenu(false);
+    // }, [puzzleIndex]);
 
     const handleKeyDown = useCallback(
         (e: KeyboardEvent) => {
@@ -125,6 +125,7 @@ const Game = () => {
     }, [openSettings, openPuzzleItemsOptions, openHelp]);
 
     useEffect(() => {
+        console.log("Game ID:", gameId);
         document.addEventListener("visibilitychange", handleVisibilityChange);
         document.addEventListener("keydown", handleKeyDown);
 
@@ -140,8 +141,6 @@ const Game = () => {
     return (
         <GameContext.Provider
             value={{
-                level,
-                setLevel,
                 puzzleItemsNumber,
                 setPuzzleItemsNumber,
                 openPuzzleItemsOptions,
@@ -174,7 +173,7 @@ const Game = () => {
                 gridPadding,
                 gridDims,
                 isGameComplete,
-                handleNextLevel,
+                // handleNextPuzzle,
             }}
         >
             <MotionConfig

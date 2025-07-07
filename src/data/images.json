@@ -1,43 +1,53 @@
 
 [
     {
+        "gameId": "a9f3k2x7qv",
         "title": "Futuristic City",
-        "src": "./images/Futuristic-city.webp"
+        "src": "/images/Futuristic-city.webp"
     },
     {
+        "gameId": "b2j4m6n8p3",
         "title": "Outer space",
-        "src": "./images/Outer-space.webp"
+        "src": "/images/Outer-space.webp"
     },
     {
+        "gameId": "c3k5n7o9q1",
         "title": "High school classroom",
-        "src": "./images/High-school-classroom.webp"
+        "src": "/images/High-school-classroom.webp"
     },
     {
+        "gameId": "d4j6m8n0p4",
         "title": "Fruits in a basket",
-        "src": "./images/Fruits-in-a-basket.webp"
+        "src": "/images/Fruits-in-a-basket.webp"
     },
     {
+        "gameId": "e5k7n9o1p5",
         "title": "Close-up of grapefruit",
-        "src": "./images/Close-Up-of-Grapefruit.webp"
+        "src": "/images/Close-Up-of-Grapefruit.webp"
     },
     {
+        "gameId": "f6l8o0p2q6",
         "title": "Beach chairs and cap",
-        "src": "./images/Beach-Chairs-and-Cap.webp"
+        "src": "/images/Beach-Chairs-and-Cap.webp"
     },
     {
+        "gameId": "g7m9p1q3r7",
         "title": "Camels in a desert",
-        "src": "./images/camels-in-a-desert.webp"
+        "src": "/images/camels-in-a-desert.webp"
     },
     {
+        "gameId": "h8n0q2r4s8",
         "title": "rabbit and turtle race",
-        "src": "./images/rabbit-turtle-race.webp"
+        "src": "/images/rabbit-turtle-race.webp"
     },
     {
+        "gameId": "i9o1r3s5t9",
         "title": "The solar system",
-        "src": "./images/Solar-System.webp"
+        "src": "/images/Solar-System.webp"
     },
     {
+        "gameId": "j0p2q4r6s0",
         "title": "Seashell Collection",
-        "src": "./images/Seashell-Collection.webp"
+        "src": "/images/Seashell-Collection.webp"
     }
 ]

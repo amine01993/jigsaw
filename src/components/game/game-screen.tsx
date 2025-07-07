@@ -31,24 +31,26 @@ import {
 } from "@dnd-kit/sortable";
 import { isTouchEvent } from "@dnd-kit/utilities";
 import classNames from "classnames";
+import { useParams } from "react-router";
 import {
     clonePieces,
     getCoordsFromIndex,
     getIndexFromCoords,
     isInsideTheGrid,
 } from "@/helpers/helper";
-import PuzzleItem, { type PuzzlePiece } from "@/components/puzzle-item";
+import PuzzleItem, { type PuzzlePiece } from "@/components/game/puzzle-item";
 import { useGame, type GameData } from "@/contexts/game";
-import Loading from "@/components/loading";
-import PuzzleItemOverlay from "@/components/puzzle-item-overlay";
-import PuzzleItemEmpty from "@/components/puzzle-item-empty";
-import CongratsAnimation from "@/components/congrats-animation";
+import Loading from "@/components/game/loading";
+import PuzzleItemOverlay from "@/components/game/puzzle-item-overlay";
+import PuzzleItemEmpty from "@/components/game/puzzle-item-empty";
+import CongratsAnimation from "@/components/game/congrats-animation";
 import ANIME_IMAGES from "@/data/images.json";
 import CanvasWorker from "@/workers/canvas.worker?worker";
 import { generateGameData, htmlImageToImageData } from "@/helpers/image";
 
 const GameScreen = () => {
     const { t } = useTranslation();
+    const { gameId } = useParams<{ gameId: string }>();
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const canvasWorkerRef = useRef<Worker | null>(null);
@@ -57,7 +59,6 @@ const GameScreen = () => {
     const {
         isLoading,
         gameInitialized,
-        level,
         puzzleItemsNumber,
         puzzlePieces,
         settings,
@@ -383,9 +384,13 @@ const GameScreen = () => {
     );
 
     const getImageUrl = useCallback(async () => {
-        const imageItem = ANIME_IMAGES[level];
-        return imageItem.src;
-    }, [level]);
+        let puzzleIndex = ANIME_IMAGES.findIndex((item) => item.gameId === gameId);
+        if (puzzleIndex === -1) puzzleIndex = 0;
+
+        const puzzle = ANIME_IMAGES[puzzleIndex];
+        console.log("Puzzle data:", puzzleIndex, puzzle);
+        return puzzle.src;
+    }, [gameId]);
 
     // Generate puzzle pieces
     const generatePuzzle = useCallback(() => {
@@ -393,6 +398,7 @@ const GameScreen = () => {
         image.crossOrigin = "anonymous";
 
         getImageUrl().then((imageUrl) => {
+            console.log("imageurl", imageUrl)
             if (!imageUrl) {
                 alert("Failed to load image!");
                 return;
@@ -437,10 +443,11 @@ const GameScreen = () => {
             }
         };
 
-        image.onerror = () => {
-            alert("Failed to load image!");
+        image.onerror = (error) => {
+            alert("Error: Failed to load image!");
+            console.error("Image loading error:", error);
         };
-    }, [level, puzzleItemsNumber]);
+    }, [getImageUrl, puzzleItemsNumber]);
 
     const updateItemSize = useCallback(() => {
         if (!isLoading && gameInitialized) {
@@ -493,6 +500,7 @@ const GameScreen = () => {
 
     // Initialize game on component mount
     useEffect(() => {
+        console.log("Initializing game...", gameId);
         setIsLoading(false);
         canvasRef.current = document.createElement("canvas");
 
@@ -738,7 +746,7 @@ const GameScreen = () => {
             <audio
                 ref={dropSound}
                 preload="auto"
-                src="./sounds/card-place-1.ogg"
+                src="/sounds/card-place-1.ogg"
             />
             <CongratsAnimation itemSize={itemSize} />
         </>

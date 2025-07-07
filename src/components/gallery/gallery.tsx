@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useScroll } from "motion/react";
 import ANIME_IMAGES from "@/data/images.json";
-import { getRandomCoords } from "../helpers/gallery";
+import { getRandomCoords } from "../../helpers/gallery";
 import GalleryItem from "./gallery-item";
 
 const Gallery = () => {
@@ -21,6 +21,7 @@ const Gallery = () => {
             );
 
             return {
+                id: item.gameId,
                 url: item.src,
                 title: item.title,
                 coords,
