@@ -13,6 +13,7 @@ import {
     rotateRight,
 } from "@/helpers/gallery";
 import { MotionLink } from "@/App";
+import { useApp } from "@/contexts/app";
 
 interface GalleryItemProps {
     index: number;
@@ -37,6 +38,8 @@ const initialOpacityArray = duplicateArray(
 
 const GalleryItem = ({ item, index }: GalleryItemProps) => {
     const { scrollYProgress } = useScroll();
+    const { userTheme } = useApp();
+
     const opacityArray = useMemo(() => {
         return rotateRight(initialOpacityArray, index);
     }, [index]);
@@ -61,7 +64,7 @@ const GalleryItem = ({ item, index }: GalleryItemProps) => {
         <MotionLink
             to={`/game/${item.id}`}
             className="w-[300px] absolute z-0 p-4 rounded-md bg-white border-2 border-offset-2 border-gray-900"
-            whileHover={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)" }}
+            whileHover={{ boxShadow: `0 0 15px ${userTheme === "dark" ? "rgba(255, 255, 255, 0.5)" : "rgba(0, 0, 0, 0.5)"}` }}
             style={{
                 opacity,
                 transform,

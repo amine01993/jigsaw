@@ -388,7 +388,6 @@ const GameScreen = () => {
         if (puzzleIndex === -1) puzzleIndex = 0;
 
         const puzzle = ANIME_IMAGES[puzzleIndex];
-        console.log("Puzzle data:", puzzleIndex, puzzle);
         return puzzle.src;
     }, [gameId]);
 
@@ -398,7 +397,6 @@ const GameScreen = () => {
         image.crossOrigin = "anonymous";
 
         getImageUrl().then((imageUrl) => {
-            console.log("imageurl", imageUrl)
             if (!imageUrl) {
                 alert("Failed to load image!");
                 return;
@@ -500,7 +498,6 @@ const GameScreen = () => {
 
     // Initialize game on component mount
     useEffect(() => {
-        console.log("Initializing game...", gameId);
         setIsLoading(false);
         canvasRef.current = document.createElement("canvas");
 

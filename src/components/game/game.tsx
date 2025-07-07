@@ -13,10 +13,8 @@ import {
 import type { PuzzlePlaceholder } from "./puzzle-item-empty";
 import type { PuzzlePiece } from "./puzzle-item";
 import { getGridDims, getGridPadding, getPuzzleDims } from "@/helpers/helper";
-import { useParams } from "react-router";
 
 const Game = () => {
-    const { gameId } = useParams();
     const [started, setStarted] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
@@ -74,15 +72,6 @@ const Game = () => {
         return false;
     }, [puzzlePieces]);
 
-    // Pass to the next puzzle
-    // const handleNextPuzzle = useCallback(() => {
-    //     setPuzzleIndex((puzzleIndex + 1) % ANIME_IMAGES.length);
-    //     setGameInitialized(false);
-    //     setStarted(false);
-    //     setIsPaused(false);
-    //     setOpenMobileMenu(false);
-    // }, [puzzleIndex]);
-
     const handleKeyDown = useCallback(
         (e: KeyboardEvent) => {
             if (e.key === "Escape") {
@@ -125,7 +114,6 @@ const Game = () => {
     }, [openSettings, openPuzzleItemsOptions, openHelp]);
 
     useEffect(() => {
-        console.log("Game ID:", gameId);
         document.addEventListener("visibilitychange", handleVisibilityChange);
         document.addEventListener("keydown", handleKeyDown);
 
@@ -173,7 +161,6 @@ const Game = () => {
                 gridPadding,
                 gridDims,
                 isGameComplete,
-                // handleNextPuzzle,
             }}
         >
             <MotionConfig

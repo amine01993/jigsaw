@@ -3,6 +3,8 @@ import { useScroll } from "motion/react";
 import ANIME_IMAGES from "@/data/images.json";
 import { getRandomCoords } from "../../helpers/gallery";
 import GalleryItem from "./gallery-item";
+import Header from "./header";
+import Loading from "./loading";
 
 const Gallery = () => {
     const galleryRef = useRef<HTMLDivElement | null>(null);
@@ -10,6 +12,7 @@ const Gallery = () => {
     const currentItemWidth = useRef(300);
     const { scrollYProgress } = useScroll();
     const [itemWidth, setItemWidth] = useState(300);
+    const [loading, setLoading] = useState(true);
 
     const list = useMemo(() => {
         return ANIME_IMAGES.map((item, index) => {
@@ -17,7 +20,7 @@ const Gallery = () => {
                 index % 4,
                 itemWidth,
                 window.innerWidth,
-                window.innerHeight
+                window.innerHeight - 80
             );
 
             return {
@@ -87,11 +90,15 @@ const Gallery = () => {
         if (scrollYProgress.get() === 0) {
             const maxScroll =
                 document.documentElement.scrollHeight - window.innerHeight;
-            window.scrollTo({ top: maxScroll * 0.001, behavior: "smooth" });
+            window.scrollTo({ top: maxScroll * 0.001, behavior: "instant" });
         }
 
         window.addEventListener("resize", handleResize);
         window.addEventListener("scroll", handleScroll);
+
+        setTimeout(() => {
+            setLoading(false);
+        }, 300);
 
         return () => {
             window.removeEventListener("resize", handleResize);
@@ -104,7 +111,10 @@ const Gallery = () => {
             className="gallery h-[calc(5000px*10)] overflow-auto"
             ref={galleryRef}
         >
-            <div className="fixed h-screen w-full perspective-normal">
+            <Header />
+
+            <div className="fixed h-screen w-full perspective-normal bg-linear-300 from-[#caf0f8] via-white to-[#caf0f8] dark:from-black dark:via-[#072083] dark:to-black transition-colors duration-300">
+                {loading && <Loading />}
                 {list.map((item, index) => (
                     <GalleryItem key={item.url} item={item} index={index} />
                 ))}
