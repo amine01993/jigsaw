@@ -1,4 +1,4 @@
-import { useGame } from "@/contexts/game";
+import { useApp } from "@/contexts/app";
 import { AnimatePresence, motion } from "motion/react";
 
 interface LoadingProps {
@@ -6,7 +6,7 @@ interface LoadingProps {
 }
 
 const Loading = ({ text }: LoadingProps) => {
-    const { userTheme } = useGame();
+    const { userTheme } = useApp();
 
     return (
         <div className="absolute top-1/2 left-1/2 -translate-1/2 flex flex-col items-center gap-5">

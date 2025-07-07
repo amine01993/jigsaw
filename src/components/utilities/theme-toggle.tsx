@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { useGame } from "@/contexts/game";
+import { useApp } from "@/contexts/app";
 
 const svgPaths = {
     darkPath: `M 186 3.5 
@@ -38,7 +38,7 @@ const svgPaths = {
 };
 
 const ThemeToggle = () => {
-    const { userTheme, setTheme } = useGame();
+    const { userTheme, setTheme } = useApp();
 
     const initialTheme = useMemo(() => {
         return userTheme;

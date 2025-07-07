@@ -1,0 +1,63 @@
+import { duplicateArray, getRange, mapRange, rotateRight } from "@/helpers/gallery";
+import {
+    cubicBezier,
+    motion,
+    useMotionTemplate,
+    useScroll,
+    useTransform,
+} from "motion/react";
+import { useMemo, memo } from "react";
+
+interface GalleryItemProps {
+    index: number;
+    item: {
+        url: string;
+        title: string;
+        coords: { x: number; y: number };
+        width: number;
+    };
+}
+
+const scrollArray = getRange(10 * 10, 0, 1);
+const initialTranslateZArray = mapRange(
+    duplicateArray([0.95, 1, 0, 0, 0, 0, 0, 0.05, 0.35, 0.7], 10),
+    [-700, 80]
+);
+const initialOpacityArray = duplicateArray([0.95, 0, 0, 0, 0, 0, 1, 1, 1, 0.95], 10);
+
+const GalleryItem = ({ item, index }: GalleryItemProps) => {
+    const { scrollYProgress } = useScroll();
+    const opacityArray = useMemo(() => {
+        return rotateRight(initialOpacityArray, index);
+    }, [index]);
+    const translateZArray = useMemo(() => {
+        return rotateRight(initialTranslateZArray, index);
+    }, [index]);
+    const opacity = useTransform(scrollYProgress, scrollArray, opacityArray);
+    const translateZ = useTransform(
+        scrollYProgress,
+        scrollArray,
+        translateZArray,
+        {
+            ease: cubicBezier(0.14, 0.43, 0.77, 0.74),
+        }
+    );
+    const transform = useMotionTemplate`translate3d(calc(${item.coords.x}vw - 50%), calc(${item.coords.y}vh - 50%), ${translateZ}px)`;
+
+    return (
+        <motion.img
+            key={item.url}
+            src={item.url}
+            title={item.title}
+            className="w-[300px] absolute z-0"
+            style={{
+                opacity,
+                transform,
+                zIndex: translateZ,
+                width: `${item.width}vw`,
+            }}
+        />
+    );
+};
+
+export default memo(GalleryItem);

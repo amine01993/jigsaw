@@ -2,7 +2,6 @@ import { createContext, useContext, type Dispatch } from "react";
 import type { PuzzlePiece } from "@/components/puzzle-item";
 import type { PuzzlePlaceholder } from "@/components/puzzle-item-empty";
 
-export type ThemeType = "dark" | "light" | "system";
 export type LocaleType = "en" | "fr";
 export type OffsetType = {
     top: number;
@@ -24,8 +23,6 @@ export interface GameData {
 }
 
 type GameContextType = {
-    theme: ThemeType;
-    setTheme: Dispatch<React.SetStateAction<ThemeType>>;
     level: number;
     setLevel: Dispatch<React.SetStateAction<number>>;
     puzzleItemsNumber: number;
@@ -60,7 +57,6 @@ type GameContextType = {
     gridPadding: { x: number; y: number };
     gridDims: { cols: number; rows: number };
     isGameComplete: boolean;
-    userTheme: ThemeType;
     handleNextLevel: () => void;
 };
 

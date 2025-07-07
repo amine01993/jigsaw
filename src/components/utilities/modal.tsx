@@ -1,6 +1,7 @@
 import { memo, useCallback } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { AnimatePresence, motion } from "motion/react";
+import { useApp } from "@/contexts/app";
 
 interface ModalProps {
     isOpen: boolean;
@@ -10,6 +11,7 @@ interface ModalProps {
 
 const Modal = ({ isOpen, onClose, children }: ModalProps) => {
 
+    const { userTheme } = useApp();
     const handlePropagation = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
     }, []);
@@ -31,7 +33,7 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
                         className="w-[500px] max-w-[90%] max-h-[calc(100vh-2rem)] overflow-y-auto absolute top-1/2 left-1/2 -translate-1/2 rounded-md shadow-md bg-linear-100 from-white to-[#caf0f8] dark:from-[#072083] dark:to-black p-5"
                         onClick={handlePropagation}
                         style={{
-                            scrollbarColor: "#072083 #caf0f8",
+                            scrollbarColor: userTheme === "dark" ? "#FFD6C1 black" : "#072083 #caf0f8",
                             scrollbarWidth: "thin",
                         }}
                     >
