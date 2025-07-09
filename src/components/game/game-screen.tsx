@@ -435,7 +435,6 @@ const GameScreen = () => {
             }
 
             const loadedProgress = gameId ? loadGameProgress(gameId) : null;
-
             if (loadedProgress) {
                 setPlayTime(Number(loadedProgress.playTime));
                 setIsPaused(true);

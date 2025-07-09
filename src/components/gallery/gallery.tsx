@@ -23,12 +23,20 @@ const Gallery = () => {
                 window.innerHeight - 80
             );
 
+            const completeAt = new Date(localStorage.getItem(`puzzle-${item.gameId}-complete`) || "");
+            const now = new Date();
+            const threeMonthsAgo = new Date(now);
+            threeMonthsAgo.setMonth(now.getMonth() - 3);
+
+            const isComplete = completeAt > threeMonthsAgo;
+
             return {
                 id: item.gameId,
                 url: item.src,
                 title: item.title,
                 coords,
                 width: itemWidth,
+                isComplete,
             };
         });
     }, [itemWidth]);
@@ -78,7 +86,7 @@ const Gallery = () => {
         if (
             diff < 0.5 &&
             scrollYProgress.getPrevious()! > scrollYProgress.get() &&
-            scrollYProgress.get() <= 0.001
+            scrollYProgress.get() <= 0.00199
         ) {
             window.scrollTo({ top: maxScroll * 0.91097, behavior: "instant" });
         }

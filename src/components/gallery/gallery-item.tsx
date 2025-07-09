@@ -6,6 +6,7 @@ import {
     useScroll,
     useTransform,
 } from "motion/react";
+import classNames from "classnames";
 import {
     duplicateArray,
     getRange,
@@ -23,6 +24,7 @@ interface GalleryItemProps {
         title: string;
         coords: { x: number; y: number };
         width: number;
+        isComplete: boolean;
     };
 }
 
@@ -63,8 +65,17 @@ const GalleryItem = ({ item, index }: GalleryItemProps) => {
     return (
         <MotionLink
             to={`/game/${item.id}`}
-            className="w-[300px] absolute z-0 p-4 rounded-md bg-white border-2 border-offset-2 border-gray-900"
-            whileHover={{ boxShadow: `0 0 15px ${userTheme === "dark" ? "rgba(255, 255, 255, 0.5)" : "rgba(0, 0, 0, 0.5)"}` }}
+            className={classNames(
+                "w-[300px] absolute z-0 p-4 rounded-md bg-white border-2 border-offset-2 border-gray-900",
+                { "grayscale-80": !item.isComplete }
+            )}
+            whileHover={{
+                boxShadow: `0 0 15px ${
+                    userTheme === "dark"
+                        ? "rgba(255, 255, 255, 0.5)"
+                        : "rgba(0, 0, 0, 0.5)"
+                }`,
+            }}
             style={{
                 opacity,
                 transform,

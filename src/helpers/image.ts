@@ -42,14 +42,14 @@ export function htmlImageToImageData(
 
 export async function generateGameData(
     puzzleItemsNumber: number,
-    loadedData: Record<string, any> | null,
+    loadedProgress: Record<string, any> | null,
     canvas: HTMLCanvasElement | OffscreenCanvas,
     image: HTMLImageElement | ImageBitmap
 ): Promise<GameData> {
     let placeholderPositions: { x: number; y: number }[] | null = null;
-
-    if (loadedData) {
-        placeholderPositions = loadedData.placeholders || null;
+    
+    if (loadedProgress) {
+        placeholderPositions = loadedProgress.placeholders || null;
     }
 
     const pieces: PuzzlePiece[] = [];
@@ -162,23 +162,23 @@ export async function generateGameData(
         gamePieces[index] = piece;
     }
 
-    if (loadedData) {
+    if (loadedProgress) {
         for (let i = 0; i < gamePieces.length; i++) {
             const piece = gamePieces[i];
             if (piece && !piece.position) {
                 const key = `${piece.correctPosition.x}-${piece.correctPosition.y}`;
-                if (loadedData[key]) {
+                if (loadedProgress[key]) {
                     const newIndex = getIndexFromCoords(
-                        loadedData[key].x + _gridPadding.x,
-                        loadedData[key].y + _gridPadding.y,
+                        loadedProgress[key].x + _gridPadding.x,
+                        loadedProgress[key].y + _gridPadding.y,
                         _gridDims.rows,
                         _gridDims.cols
                     );
                     gamePieces[newIndex] = {
                         ...piece,
                         position: {
-                            x: loadedData[key].x,
-                            y: loadedData[key].y,
+                            x: loadedProgress[key].x,
+                            y: loadedProgress[key].y,
                         },
                     };
                     gamePieces[i] = null;
