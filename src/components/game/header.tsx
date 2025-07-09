@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useParams } from "react-router";
 import {
     GiAbstract050,
+    GiCycle,
     GiFastForwardButton,
     GiGears,
     GiHelp,
@@ -10,29 +11,38 @@ import {
     GiSoundOn,
 } from "react-icons/gi";
 import { useTranslation } from "react-i18next";
+import classNames from "classnames";
+import { getIndexFromCoords } from "@/helpers/helper";
 import { useGame } from "@/contexts/game";
+import ANIME_IMAGES from "@/data/images.json";
 import ThemeToggle from "../utilities/theme-toggle";
 import GameInfo from "./game-info";
-import ANIME_IMAGES from "@/data/images.json";
-import classNames from "classnames";
 import { MotionLink } from "@/App";
+import type { PuzzlePiece } from "./puzzle-item";
 
 const Header = () => {
     const { t } = useTranslation();
     const { gameId } = useParams();
     const {
         isGameComplete,
+        started,
         settings,
         openMobileMenu,
+        puzzlePieces,
+        gridPadding,
+        gridDims,
         setOpenMobileMenu,
         setSettings,
         setOpenSettings,
         setOpenPuzzleItemsOptions,
         setOpenHelp,
-        // handleNextPuzzle,
+        setPuzzlePieces,
     } = useGame();
 
     const nextPuzzlePath = useMemo(() => {
+        if (!isGameComplete) {
+            return "#";
+        }
         let currentPuzzleIndex = 0;
         if (gameId) {
             currentPuzzleIndex = ANIME_IMAGES.findIndex(
@@ -44,7 +54,7 @@ const Header = () => {
         }
         const nextPuzzleIndex = (currentPuzzleIndex + 1) % ANIME_IMAGES.length;
         return `/game/${ANIME_IMAGES[nextPuzzleIndex].gameId}`;
-    }, [gameId]);
+    }, [gameId, isGameComplete]);
 
     const toggleMobileMenu = useCallback(() => {
         setOpenMobileMenu((prev) => !prev);
@@ -71,12 +81,38 @@ const Header = () => {
         });
     }, []);
 
+    const handleRestartGame = useCallback(() => {
+        setOpenMobileMenu(false);
+
+        const newGamePieces: (PuzzlePiece | null)[] = Array.from(
+            {
+                length: puzzlePieces.length,
+            },
+            () => null
+        );
+
+        for (const piece of puzzlePieces) {
+            if (piece) {
+                const newIndex = getIndexFromCoords(
+                    piece.outsidePosition.x + gridPadding.x,
+                    piece.outsidePosition.y + gridPadding.y,
+                    gridDims.rows,
+                    gridDims.cols
+                );
+                newGamePieces[newIndex] = {
+                    ...piece,
+                    position: null,
+                };
+            }
+        }
+
+        setPuzzlePieces(newGamePieces);
+    }, [puzzlePieces, gridPadding, gridDims]);
+
     return (
         <>
             <header className="flex justify-between items-center px-4 h-12 bg-black/10 dark:bg-white/10 backdrop-blur-sm transition-colors duration-300">
-                <MotionLink
-                    to="/"
-                >
+                <MotionLink to="/">
                     <img
                         src="/logo.svg"
                         alt="Jigsaw Puzzle Logo"
@@ -112,6 +148,22 @@ const Header = () => {
                             {t("Puzzle Size")}
                         </span>
                         <GiAbstract050 size={25} />
+                    </motion.button>
+                    <motion.button
+                        whileHover={{ scale: started ? 1.1 : 1 }}
+                        whileTap={{ scale: started ? 0.95 : 1 }}
+                        className={classNames(
+                            "gap-3 items-center hidden md:flex p-2",
+                            { "cursor-not-allowed opacity-50": !started },
+                            { "cursor-pointer": started }
+                        )}
+                        onClick={handleRestartGame}
+                        disabled={!started}
+                    >
+                        <span className="hidden custom-lg:inline-block text-md">
+                            {t("Restart")}
+                        </span>
+                        <GiCycle size={25} />
                     </motion.button>
                     <MotionLink
                         whileHover={{ scale: isGameComplete ? 1.1 : 1 }}
@@ -212,6 +264,22 @@ const Header = () => {
                         >
                             <span className="text-md">{t("Puzzle Size")}</span>
                             <GiAbstract050 size={25} />
+                            <span className="absolute inset-0 w-[calc(100vw-4rem)]" />
+                        </motion.button>
+                        <motion.button
+                            whileHover={{ scale: started ? 1.1 : 1 }}
+                            whileTap={{ scale: started ? 0.95 : 1 }}
+                            className={classNames(
+                                "flex gap-3 items-center max-w-fit relative py-2",
+                                { "cursor-not-allowed opacity-50": !started },
+                                { "cursor-pointer": started }
+                            )}
+                            onClick={handleRestartGame}
+                            disabled={!started}
+                        >
+                            <span className="text-md">{t("Restart")}</span>
+                            <GiCycle size={25} />
+
                             <span className="absolute inset-0 w-[calc(100vw-4rem)]" />
                         </motion.button>
                         <MotionLink

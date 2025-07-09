@@ -1,8 +1,10 @@
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { GiPauseButton, GiPlayButton } from "react-icons/gi";
+import { AnimatePresence, motion } from "motion/react";
 import { useGame } from "@/contexts/game";
 import { getDurationFromSeconds } from "@/helpers/helper";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import GameFPS from "./game-fps";
-import { useTranslation } from "react-i18next";
 
 const GameInfo = () => {
     const { t } = useTranslation();
@@ -14,7 +16,9 @@ const GameInfo = () => {
         openHelp,
         openPuzzleItemsOptions,
         openSettings,
+        isGameComplete,
         setIsPaused,
+        setStarted,
     } = useGame();
     const [playTime, setPlayTime] = useState(0);
 
@@ -65,14 +69,44 @@ const GameInfo = () => {
         };
     }, [isGamePaused, started, playTime]);
 
+    useEffect(() => {
+        if (isGameComplete) {
+            setStarted(false);
+        }
+    }, [isGameComplete]);
+
     return (
         <div className="flex items-center text-[#072083] dark:text-[#FFD6C1] w-[200px] transition-colors duration-300">
             {settings.showTimer && (
                 <button
-                    className="text-md w-[90px] cursor-pointer"
+                    className="text-md w-[90px] cursor-pointer flex flex-row items-center gap-2"
                     aria-label={t("Play time")}
                     onClick={togglePause}
                 >
+                    <AnimatePresence mode="wait">
+                        {isGamePaused && (
+                            <motion.span
+                                key="play-button"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.15 }}
+                            >
+                                <GiPlayButton size={25} />
+                            </motion.span>
+                        )}
+                        {!isGamePaused && (
+                            <motion.span
+                                key="pause-button"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.15 }}
+                            >
+                                <GiPauseButton size={25} />
+                            </motion.span>
+                        )}
+                    </AnimatePresence>
                     {playTimeDisplay}
                 </button>
             )}

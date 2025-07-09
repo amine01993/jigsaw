@@ -348,6 +348,7 @@ const GameScreen = () => {
             }
 
             if (dropSound.current && settings.playSound) {
+                dropSound.current.currentTime = 0;
                 dropSound.current.play().catch((error) => {
                     console.error("Error playing drop sound:", error);
                 });

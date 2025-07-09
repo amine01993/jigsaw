@@ -2,7 +2,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 @custom-variant pointer-coarse (@media (pointer: coarse));
-@custom-variant custom-lg (@media (width >= 1100px));
+@custom-variant custom-lg (@media (width >= 1200px));
 
 html,
 body {
