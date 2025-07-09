@@ -16,7 +16,7 @@ const CongratsAnimation = ({ itemSize }: CongratsAnimationProps) => {
     const isAnimating = useRef(false);
     const animationId = useRef(0);
     const levelUpSound = useRef<HTMLAudioElement | null>(null);
-    const { isGameComplete, gridDims, settings } = useGame();
+    const { isGameComplete, gridDims, settings, started } = useGame();
 
     // Initialize particles
     const initParticles = useCallback(() => {
@@ -55,7 +55,7 @@ const CongratsAnimation = ({ itemSize }: CongratsAnimationProps) => {
     useEffect(() => {
         if (isGameComplete) {
             const canvas = congratsCanvas.current;
-            if (canvas) {
+            if (canvas && started) {
                 ctx.current = canvas.getContext("2d");
                 if (ctx.current) {
                     // Start the confetti animation
@@ -82,7 +82,7 @@ const CongratsAnimation = ({ itemSize }: CongratsAnimationProps) => {
             isAnimating.current = false;
             cancelAnimationFrame(animationId.current);
         };
-    }, [isGameComplete, settings.playSound, gameId]);
+    }, [isGameComplete, settings.playSound, gameId, started]);
 
     return (
         <>

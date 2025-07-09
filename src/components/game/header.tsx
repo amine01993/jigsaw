@@ -115,7 +115,12 @@ const Header = () => {
 
     return (
         <>
-            <header className="flex justify-between items-center px-4 h-12 bg-black/10 dark:bg-white/10 backdrop-blur-sm transition-colors duration-300">
+            <motion.header
+                initial={{ y: 16, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 16, opacity: 0 }}
+                className="flex justify-between items-center px-4 h-12 bg-black/10 dark:bg-white/10 backdrop-blur-sm transition-colors duration-300"
+            >
                 <MotionLink to="/">
                     <img
                         src="/logo.svg"
@@ -250,7 +255,7 @@ const Header = () => {
                         <span className="absolute size-12 top-1/2 left-1/2 -translate-1/2 hidden pointer-coarse:inline-block" />
                     </motion.button>
                 </div>
-            </header>
+            </motion.header>
 
             <AnimatePresence>
                 {openMobileMenu && (

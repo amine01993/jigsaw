@@ -1,4 +1,3 @@
-import { MotionConfig } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Header from "@/components/game/header";
 import GameScreen from "@/components/game/game-screen";
@@ -166,23 +165,15 @@ const Game = () => {
                 isGameComplete,
             }}
         >
-            <MotionConfig
-                transition={{
-                    duration: 0.3,
-                    type: "tween",
-                    ease: "easeInOut",
-                }}
-            >
-                <div className="bg-linear-300 from-[#caf0f8] via-white to-[#caf0f8] dark:from-black dark:via-[#072083] dark:to-black w-full h-screen relative transition-colors duration-300">
-                    <Header />
+            <div className="bg-linear-300 from-[#caf0f8] via-white to-[#caf0f8] dark:from-black dark:via-[#072083] dark:to-black w-full h-screen relative transition-colors duration-300">
+                <Header />
 
-                    <GameScreen />
+                <GameScreen />
 
-                    <Settings />
-                    <PuzzleItemsOptions />
-                    <Help />
-                </div>
-            </MotionConfig>
+                <Settings />
+                <PuzzleItemsOptions />
+                <Help />
+            </div>
         </GameContext.Provider>
     );
 };

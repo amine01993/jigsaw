@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Outlet, Link } from "react-router";
-import { motion } from "motion/react";
-import {
-    AppContext,
-    type ThemeType,
-} from "@/contexts/app";
+import { AnimatePresence, motion, MotionConfig } from "motion/react";
+import { AppContext, type ThemeType } from "@/contexts/app";
 import "./App.css";
 
 export const MotionLink = motion.create(Link);
@@ -52,8 +49,19 @@ function App() {
                 theme,
                 setTheme,
                 userTheme,
-            }}>
-            <Outlet />
+            }}
+        >
+            <MotionConfig
+                transition={{
+                    duration: 0.3,
+                    type: "tween",
+                    ease: "easeInOut",
+                }}
+            >
+                <AnimatePresence mode="wait">
+                    <Outlet />
+                </AnimatePresence>
+            </MotionConfig>
         </AppContext.Provider>
     );
 }
