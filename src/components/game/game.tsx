@@ -17,6 +17,7 @@ import { getGridDims, getGridPadding, getPuzzleDims } from "@/helpers/helper";
 const Game = () => {
     const [started, setStarted] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
+    const [playTime, setPlayTime] = useState(0);
     const [isVisible, setIsVisible] = useState(true);
     const [puzzleItemsNumber, setPuzzleItemsNumber] = useState(9);
     const [openPuzzleItemsOptions, setOpenPuzzleItemsOptions] = useState(false);
@@ -153,6 +154,8 @@ const Game = () => {
                 setStarted,
                 isPaused,
                 setIsPaused,
+                playTime,
+                setPlayTime,
                 isVisible,
                 setIsVisible,
                 placeholders,

@@ -37,6 +37,8 @@ import {
     getCoordsFromIndex,
     getIndexFromCoords,
     isInsideTheGrid,
+    loadGameProgress,
+    saveGameProgress,
 } from "@/helpers/helper";
 import PuzzleItem, { type PuzzlePiece } from "@/components/game/puzzle-item";
 import { useGame, type GameData } from "@/contexts/game";
@@ -64,6 +66,9 @@ const GameScreen = () => {
         settings,
         placeholders,
         started,
+        isPaused,
+        playTime,
+        setPlayTime,
         setIsPaused,
         setPuzzlePieces,
         setGameInitialized,
@@ -161,10 +166,12 @@ const GameScreen = () => {
 
             if (!started) {
                 setStarted(true);
+            }
+            if (isPaused) {
                 setIsPaused(false);
             }
         },
-        [started]
+        [started, isPaused]
     );
 
     const handleDragEnd = useCallback(
@@ -187,6 +194,8 @@ const GameScreen = () => {
             const activeCoords = getCoordsFromIndex(activeIndex, gridDims.cols);
             const overCoords = getCoordsFromIndex(overIndex, gridDims.cols);
 
+            let newPieces: (PuzzlePiece | null)[] = [];
+
             if (
                 !isInsideTheGrid(
                     activeCoords.x,
@@ -202,51 +211,48 @@ const GameScreen = () => {
                 )
             ) {
                 // if comes from outside the grid and dropped inside it
-                setPuzzlePieces((pieces: (PuzzlePiece | null)[]) => {
-                    const newPieces = clonePieces(pieces);
-                    const piece = newPieces[activeIndex]!;
+                newPieces = clonePieces(puzzlePieces);
+                const piece = newPieces[activeIndex]!;
 
-                    if (newPieces[overIndex]) {
-                        // If the cell is occupied, we need to handle the existing piece
-                        const existingPiece = newPieces[overIndex];
+                if (newPieces[overIndex]) {
+                    // If the cell is occupied, we need to handle the existing piece
+                    const existingPiece = newPieces[overIndex];
 
-                        // If the dropped piece comes from outside the grid, then the existing piece should be moved to its original position
-                        const newOverIndex = getIndexFromCoords(
-                            existingPiece.outsidePosition.x + gridPadding.x,
-                            existingPiece.outsidePosition.y + gridPadding.y,
-                            gridDims.rows,
-                            gridDims.cols
-                        );
-                        newPieces[newOverIndex] = {
-                            ...existingPiece,
-                            position: null,
-                        };
+                    // If the dropped piece comes from outside the grid, then the existing piece should be moved to its original position
+                    const newOverIndex = getIndexFromCoords(
+                        existingPiece.outsidePosition.x + gridPadding.x,
+                        existingPiece.outsidePosition.y + gridPadding.y,
+                        gridDims.rows,
+                        gridDims.cols
+                    );
+                    newPieces[newOverIndex] = {
+                        ...existingPiece,
+                        position: null,
+                    };
 
-                        newPieces[activeIndex] = null;
+                    newPieces[activeIndex] = null;
 
-                        // Place the new piece in the desired position
-                        newPieces[overIndex] = {
-                            ...piece,
-                            position: {
-                                x: overCoords.x - gridPadding.x,
-                                y: overCoords.y - gridPadding.y,
-                            },
-                        };
-                    } else {
-                        // If the cell is empty, simply place the new piece
-                        newPieces[activeIndex] = null;
+                    // Place the new piece in the desired position
+                    newPieces[overIndex] = {
+                        ...piece,
+                        position: {
+                            x: overCoords.x - gridPadding.x,
+                            y: overCoords.y - gridPadding.y,
+                        },
+                    };
+                } else {
+                    // If the cell is empty, simply place the new piece
+                    newPieces[activeIndex] = null;
 
-                        newPieces[overIndex] = {
-                            ...piece,
-                            position: {
-                                x: overCoords.x - gridPadding.x,
-                                y: overCoords.y - gridPadding.y,
-                            },
-                        };
-                    }
-
-                    return newPieces;
-                });
+                    newPieces[overIndex] = {
+                        ...piece,
+                        position: {
+                            x: overCoords.x - gridPadding.x,
+                            y: overCoords.y - gridPadding.y,
+                        },
+                    };
+                }
+                setPuzzlePieces(newPieces);
             } else if (
                 isInsideTheGrid(
                     activeCoords.x,
@@ -262,52 +268,50 @@ const GameScreen = () => {
                 )
             ) {
                 // if comes from inside the grid and dropped inside it
-                setPuzzlePieces((pieces: (PuzzlePiece | null)[]) => {
-                    const newPieces = clonePieces(pieces);
-                    const piece = newPieces[activeIndex]!;
+                newPieces = clonePieces(puzzlePieces);
+                const piece = newPieces[activeIndex]!;
 
-                    if (newPieces[overIndex]) {
-                        // If the cell is occupied, we need to handle the existing piece
-                        const existingPiece = newPieces[overIndex];
+                if (newPieces[overIndex]) {
+                    // If the cell is occupied, we need to handle the existing piece
+                    const existingPiece = newPieces[overIndex];
 
-                        // If the position didn't change, we don't need to do anything
-                        if (existingPiece.id === piece.id) {
-                            return newPieces;
-                        }
-
-                        // Otherwise the pieces should be swapped
-                        newPieces[activeIndex] = {
-                            ...existingPiece,
-                            position: {
-                                x: activeCoords.x - gridPadding.x,
-                                y: activeCoords.y - gridPadding.y,
-                            },
-                        };
-
-                        // Place the new piece in the desired position
-                        newPieces[overIndex] = {
-                            ...piece,
-                            position: {
-                                x: overCoords.x - gridPadding.x,
-                                y: overCoords.y - gridPadding.y,
-                            },
-                        };
-                    } else {
-                        // If the cell is empty, simply place the new piece
-                        newPieces[activeIndex] = null;
-
-                        // Place the new piece in the desired position
-                        newPieces[overIndex] = {
-                            ...piece,
-                            position: {
-                                x: overCoords.x - gridPadding.x,
-                                y: overCoords.y - gridPadding.y,
-                            },
-                        };
+                    // If the position didn't change, we don't need to do anything
+                    if (existingPiece.id === piece.id) {
+                        return newPieces;
                     }
 
-                    return newPieces;
-                });
+                    // Otherwise the pieces should be swapped
+                    newPieces[activeIndex] = {
+                        ...existingPiece,
+                        position: {
+                            x: activeCoords.x - gridPadding.x,
+                            y: activeCoords.y - gridPadding.y,
+                        },
+                    };
+
+                    // Place the new piece in the desired position
+                    newPieces[overIndex] = {
+                        ...piece,
+                        position: {
+                            x: overCoords.x - gridPadding.x,
+                            y: overCoords.y - gridPadding.y,
+                        },
+                    };
+                } else {
+                    // If the cell is empty, simply place the new piece
+                    newPieces[activeIndex] = null;
+
+                    // Place the new piece in the desired position
+                    newPieces[overIndex] = {
+                        ...piece,
+                        position: {
+                            x: overCoords.x - gridPadding.x,
+                            y: overCoords.y - gridPadding.y,
+                        },
+                    };
+                }
+
+                setPuzzlePieces(newPieces);
             } else if (
                 isInsideTheGrid(
                     activeCoords.x,
@@ -323,26 +327,24 @@ const GameScreen = () => {
                 )
             ) {
                 // if comes from inside the grid and dropped outside of it
-                setPuzzlePieces((pieces: (PuzzlePiece | null)[]) => {
-                    const newPieces = clonePieces(pieces);
-                    const piece = newPieces[activeIndex]!;
+                newPieces = clonePieces(puzzlePieces);
+                const piece = newPieces[activeIndex]!;
 
-                    const newOverIndex = getIndexFromCoords(
-                        piece.outsidePosition.x + gridPadding.x,
-                        piece.outsidePosition.y + gridPadding.y,
-                        gridDims.rows,
-                        gridDims.cols
-                    );
+                const newOverIndex = getIndexFromCoords(
+                    piece.outsidePosition.x + gridPadding.x,
+                    piece.outsidePosition.y + gridPadding.y,
+                    gridDims.rows,
+                    gridDims.cols
+                );
 
-                    newPieces[activeIndex] = null;
+                newPieces[activeIndex] = null;
 
-                    newPieces[newOverIndex] = {
-                        ...piece,
-                        position: null,
-                    };
+                newPieces[newOverIndex] = {
+                    ...piece,
+                    position: null,
+                };
 
-                    return newPieces;
-                });
+                setPuzzlePieces(newPieces);
             } else {
                 // if comes from outside the grid and dropped outside of it
             }
@@ -353,8 +355,27 @@ const GameScreen = () => {
                     console.error("Error playing drop sound:", error);
                 });
             }
+
+            if (newPieces.length > 0 && gameId) {
+                saveGameProgress(
+                    gameId,
+                    newPieces,
+                    settings.showHints ? placeholders : [],
+                    playTime
+                );
+            }
         },
-        [puzzlePieces, gridDims, gridPadding, puzzleDims, settings.playSound]
+        [
+            puzzlePieces,
+            placeholders,
+            gridDims,
+            gridPadding,
+            puzzleDims,
+            settings.playSound,
+            settings.showHints,
+            gameId,
+            playTime,
+        ]
     );
 
     const handleDragCancel = useCallback(() => {}, []);
@@ -385,7 +406,9 @@ const GameScreen = () => {
     );
 
     const getImageUrl = useCallback(async () => {
-        let puzzleIndex = ANIME_IMAGES.findIndex((item) => item.gameId === gameId);
+        let puzzleIndex = ANIME_IMAGES.findIndex(
+            (item) => item.gameId === gameId
+        );
         if (puzzleIndex === -1) puzzleIndex = 0;
 
         const puzzle = ANIME_IMAGES[puzzleIndex];
@@ -411,7 +434,14 @@ const GameScreen = () => {
                 return;
             }
 
-            let data;
+            const loadedProgress = gameId ? loadGameProgress(gameId) : null;
+
+            if (loadedProgress) {
+                setPlayTime(Number(loadedProgress.playTime));
+                setIsPaused(true);
+                setStarted(true);
+            }
+
             if (canvasWorkerRef.current) {
                 const imageData = htmlImageToImageData(
                     canvasRef.current,
@@ -420,17 +450,19 @@ const GameScreen = () => {
                 const newCanvas = document.createElement("canvas");
                 const offscreen = newCanvas.transferControlToOffscreen();
 
-                data = await canvasWorkerRef.current.postMessage(
+                await canvasWorkerRef.current.postMessage(
                     {
                         puzzleItemsNumber,
+                        loadedProgress,
                         canvas: offscreen,
                         image: imageData,
                     },
                     [offscreen]
                 );
             } else {
-                data = await generateGameData(
+                const data = await generateGameData(
                     puzzleItemsNumber,
+                    loadedProgress,
                     canvasRef.current,
                     image
                 );

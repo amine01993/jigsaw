@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { GiPauseButton, GiPlayButton } from "react-icons/gi";
 import { AnimatePresence, motion } from "motion/react";
@@ -17,10 +17,11 @@ const GameInfo = () => {
         openPuzzleItemsOptions,
         openSettings,
         isGameComplete,
+        playTime,
+        setPlayTime,
         setIsPaused,
         setStarted,
     } = useGame();
-    const [playTime, setPlayTime] = useState(0);
 
     const playTimeDisplay = useMemo(() => {
         return getDurationFromSeconds(playTime);

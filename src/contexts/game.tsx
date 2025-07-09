@@ -47,6 +47,8 @@ type GameContextType = {
     setStarted: Dispatch<React.SetStateAction<boolean>>;
     isPaused: boolean;
     setIsPaused: Dispatch<React.SetStateAction<boolean>>;
+    playTime: number;
+    setPlayTime: Dispatch<React.SetStateAction<number>>;
     isVisible: boolean;
     setIsVisible: Dispatch<React.SetStateAction<boolean>>;
     placeholders: PuzzlePlaceholder[];

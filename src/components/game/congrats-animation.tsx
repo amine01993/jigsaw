@@ -1,12 +1,15 @@
 import { memo, useCallback, useEffect, useRef } from "react";
+import { useParams } from "react-router";
 import classNames from "classnames";
 import { useGame } from "@/contexts/game";
+import { markGameComplete } from "@/helpers/helper";
 
 interface CongratsAnimationProps {
     itemSize: number;
 }
 
 const CongratsAnimation = ({ itemSize }: CongratsAnimationProps) => {
+    const { gameId } = useParams();
     const congratsCanvas = useRef<HTMLCanvasElement>(null);
     const ctx = useRef<CanvasRenderingContext2D | null>(null);
     const confetti = useRef<ConfettiPiece[]>([]);
@@ -66,6 +69,10 @@ const CongratsAnimation = ({ itemSize }: CongratsAnimationProps) => {
                     }
                 }
             }
+
+            if(gameId) {
+                markGameComplete(gameId);
+            }
         } else {
             isAnimating.current = false;
             cancelAnimationFrame(animationId.current);
@@ -75,7 +82,7 @@ const CongratsAnimation = ({ itemSize }: CongratsAnimationProps) => {
             isAnimating.current = false;
             cancelAnimationFrame(animationId.current);
         };
-    }, [isGameComplete, settings.playSound]);
+    }, [isGameComplete, settings.playSound, gameId]);
 
     return (
         <>

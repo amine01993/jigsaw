@@ -1,5 +1,6 @@
-import type { PuzzlePiece } from "@/components/game/puzzle-item";
 import type { OffsetType } from "@/contexts/game";
+import type { PuzzlePiece } from "@/components/game/puzzle-item";
+import type { PuzzlePlaceholder } from "@/components/game/puzzle-item-empty";
 
 export function getOffsetAndOutsidePositions(rows: number, cols: number) {
     const positions: { x: number; y: number }[] = [];
@@ -177,4 +178,50 @@ export function getPlaceholderCount(puzzleItemsNumber: number) {
     return dim - 2;
 }
 
+export function loadGameProgress(id: string) {
+    const savedData = localStorage.getItem(`puzzle-${id}`);
+    const parsedData = savedData ? JSON.parse(savedData) : null;
 
+    return parsedData as Record<string, number | {x: number; y: number} | {x: number; y: number}[]> | null;
+}
+
+export function saveGameProgress(
+    id: string,
+    pieces: (PuzzlePiece | null)[],
+    placeholders: PuzzlePlaceholder[],
+    playTime: number
+) {
+    const dataToSave: Record<string, any> = {};
+    for (const piece of pieces) {
+        if (piece && piece.position) {
+            dataToSave[
+                `${piece.correctPosition.x}-${piece.correctPosition.y}`
+            ] = {
+                x: piece.position.x,
+                y: piece.position.y,
+            };
+        }
+    }
+
+    dataToSave["placeholders"] = placeholders.map(
+        (placeholder) => ({
+            x: placeholder.x,
+            y: placeholder.y,
+        })
+    );
+
+    if (Object.keys(dataToSave).length > 0) {
+        dataToSave.playTime = playTime;
+        localStorage.setItem(`puzzle-${id}`, JSON.stringify(dataToSave));
+    }
+}
+
+export function markGameComplete(id: string) {
+    const date = new Date().toISOString();
+    localStorage.setItem(`puzzle-${id}-complete`, date);
+    localStorage.removeItem(`puzzle-${id}`);
+}
+
+export function clearGameProgress(id: string) {
+    localStorage.removeItem(`puzzle-${id}`);
+}

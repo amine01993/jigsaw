@@ -30,7 +30,7 @@ export function htmlImageToImageData(
 ): ImageData | null {
     canvas.width = image.width;
     canvas.height = image.height;
-    const ctx = canvas.getContext("2d", {willReadFrequently: true});
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) {
         alert("Failed to get canvas context!");
         return null;
@@ -42,9 +42,16 @@ export function htmlImageToImageData(
 
 export async function generateGameData(
     puzzleItemsNumber: number,
+    loadedData: Record<string, any> | null,
     canvas: HTMLCanvasElement | OffscreenCanvas,
     image: HTMLImageElement | ImageBitmap
 ): Promise<GameData> {
+    let placeholderPositions: { x: number; y: number }[] | null = null;
+
+    if (loadedData) {
+        placeholderPositions = loadedData.placeholders || null;
+    }
+
     const pieces: PuzzlePiece[] = [];
     const _puzzleDims = getPuzzleDims(puzzleItemsNumber);
     const data = getOffsetAndOutsidePositions(
@@ -113,7 +120,21 @@ export async function generateGameData(
     // Set the position of each piece outside the grid
     for (let i = 0; i < pieces.length; i++) {
         pieces[i].outsidePosition = data.outsidePositions[i];
-        if (i < placeholderCount) {
+        if (placeholderPositions) {
+            const isPlaceholder = placeholderPositions.some(
+                (pos) =>
+                    pieces[i].correctPosition.x === pos.x &&
+                    pieces[i].correctPosition.y === pos.y
+            );
+            if (isPlaceholder) {
+                _placeholders.push({
+                    x: pieces[i].correctPosition.x,
+                    y: pieces[i].correctPosition.y,
+                    image: pieces[i].image,
+                });
+            }
+        }
+        else if (i < placeholderCount) {
             _placeholders.push({
                 x: pieces[i].correctPosition.x,
                 y: pieces[i].correctPosition.y,
@@ -139,6 +160,31 @@ export async function generateGameData(
         );
 
         gamePieces[index] = piece;
+    }
+
+    if (loadedData) {
+        for (let i = 0; i < gamePieces.length; i++) {
+            const piece = gamePieces[i];
+            if (piece && !piece.position) {
+                const key = `${piece.correctPosition.x}-${piece.correctPosition.y}`;
+                if (loadedData[key]) {
+                    const newIndex = getIndexFromCoords(
+                        loadedData[key].x + _gridPadding.x,
+                        loadedData[key].y + _gridPadding.y,
+                        _gridDims.rows,
+                        _gridDims.cols
+                    );
+                    gamePieces[newIndex] = {
+                        ...piece,
+                        position: {
+                            x: loadedData[key].x,
+                            y: loadedData[key].y,
+                        },
+                    };
+                    gamePieces[i] = null;
+                }
+            }
+        }
     }
 
     return {
