@@ -1,19 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Header from "@/components/game/header";
-import GameScreen from "@/components/game/game-screen";
-import Settings from "@/components/game/settings";
-import PuzzleItemsOptions from "@/components/game/puzzle-items-options";
-import Help from "@/components/game/help";
+import { useParams } from "react-router";
 import {
     GameContext,
     type OffsetType,
     type SettingType,
 } from "@/contexts/game";
+import { clearGameProgress, getGridDims, getGridPadding, getIndexFromCoords, getPuzzleDims } from "@/helpers/helper";
+import Header from "@/components/game/header";
+import GameScreen from "@/components/game/game-screen";
+import Settings from "@/components/game/settings";
+import PuzzleItemsOptions from "@/components/game/puzzle-items-options";
+import Help from "@/components/game/help";
 import type { PuzzlePlaceholder } from "./puzzle-item-empty";
 import type { PuzzlePiece } from "./puzzle-item";
-import { getGridDims, getGridPadding, getPuzzleDims } from "@/helpers/helper";
 
 const Game = () => {
+    const { gameId } = useParams();
     const [started, setStarted] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [playTime, setPlayTime] = useState(0);
@@ -72,6 +74,39 @@ const Game = () => {
         return false;
     }, [puzzlePieces]);
 
+    const handleRestartGame = useCallback(() => {
+        setOpenMobileMenu(false);
+
+        const newGamePieces: (PuzzlePiece | null)[] = Array.from(
+            {
+                length: puzzlePieces.length,
+            },
+            () => null
+        );
+
+        for (const piece of puzzlePieces) {
+            if (piece) {
+                const newIndex = getIndexFromCoords(
+                    piece.outsidePosition.x + gridPadding.x,
+                    piece.outsidePosition.y + gridPadding.y,
+                    gridDims.rows,
+                    gridDims.cols
+                );
+                newGamePieces[newIndex] = {
+                    ...piece,
+                    position: null,
+                };
+            }
+        }
+
+        setPuzzlePieces(newGamePieces);
+        setStarted(false);
+
+        if (gameId) {
+            clearGameProgress(gameId, puzzleItemsNumber);
+        }
+    }, [puzzlePieces, gridPadding, gridDims, gameId, puzzleItemsNumber]);
+
     const handleKeyDown = useCallback(
         (e: KeyboardEvent) => {
             if (e.key === "Escape") {
@@ -84,11 +119,19 @@ const Game = () => {
                 }
             } else if (e.key === "P" || e.key === "p") {
                 setIsPaused(true);
+            } else if (e.key === "R" || e.key === "r") {
+                handleRestartGame();
             } else if (e.key === "H" || e.key === "h") {
+                setOpenSettings(false);
+                setOpenPuzzleItemsOptions(false);
                 setOpenHelp(true);
             } else if (e.key === "D" || e.key === "d") {
+                setOpenHelp(false);
+                setOpenSettings(false);
                 setOpenPuzzleItemsOptions(true);
             } else if (e.key === "S" || e.key === "s") {
+                setOpenPuzzleItemsOptions(false);
+                setOpenHelp(false);
                 setOpenSettings(true);
             } else if (e.key === "M" || e.key === "m") {
                 setSettings((prev) => ({
@@ -97,7 +140,7 @@ const Game = () => {
                 }));
             }
         },
-        [openSettings, openPuzzleItemsOptions, openHelp]
+        [openSettings, openPuzzleItemsOptions, openHelp, handleRestartGame]
     );
 
     const handleVisibilityChange = useCallback(() => {
@@ -170,6 +213,7 @@ const Game = () => {
                 gridPadding,
                 gridDims,
                 isGameComplete,
+                handleRestartGame,
             }}
         >
             <div className="bg-linear-300 from-[#caf0f8] via-white to-[#caf0f8] dark:from-black dark:via-[#072083] dark:to-black w-full h-screen relative transition-colors duration-300">

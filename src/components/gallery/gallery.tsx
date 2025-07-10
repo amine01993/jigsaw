@@ -27,7 +27,6 @@ const Gallery = () => {
             const dates = Object.values(completeData).map(date => new Date(String(date)));
             const maxDate = Math.max(...dates.map(d => d.getTime()));
 
-            console.log("Complete Data:", maxDate);
             const now = new Date();
             const threeMonthsAgo = new Date(now);
             threeMonthsAgo.setMonth(now.getMonth() - 3);

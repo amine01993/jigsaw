@@ -56,6 +56,12 @@ const Help = () => {
                             </td>
                         </tr>
                         <tr>
+                            <td className="border-1 p-2">R</td>
+                            <td className="border-1 p-2">
+                                {t("Restart the game")}
+                            </td>
+                        </tr>
+                        <tr>
                             <td className="border-1 p-2">H</td>
                             <td className="border-1 p-2">{t("Open help")}</td>
                         </tr>

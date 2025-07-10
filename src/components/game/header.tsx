@@ -12,13 +12,11 @@ import {
 } from "react-icons/gi";
 import { useTranslation } from "react-i18next";
 import classNames from "classnames";
-import { clearGameProgress, getIndexFromCoords } from "@/helpers/helper";
 import { useGame } from "@/contexts/game";
 import ANIME_IMAGES from "@/data/images.json";
 import ThemeToggle from "../utilities/theme-toggle";
 import GameInfo from "./game-info";
 import { MotionLink } from "@/App";
-import type { PuzzlePiece } from "./puzzle-item";
 
 const Header = () => {
     const { t } = useTranslation();
@@ -28,16 +26,12 @@ const Header = () => {
         started,
         settings,
         openMobileMenu,
-        puzzlePieces,
-        gridPadding,
-        gridDims,
         setOpenMobileMenu,
         setSettings,
         setOpenSettings,
         setOpenPuzzleItemsOptions,
         setOpenHelp,
-        setPuzzlePieces,
-        setStarted,
+        handleRestartGame,
     } = useGame();
 
     const nextPuzzlePath = useMemo(() => {
@@ -81,37 +75,6 @@ const Header = () => {
             };
         });
     }, []);
-
-    const handleRestartGame = useCallback(() => {
-        setOpenMobileMenu(false);
-
-        const newGamePieces: (PuzzlePiece | null)[] = Array.from(
-            {
-                length: puzzlePieces.length,
-            },
-            () => null
-        );
-
-        for (const piece of puzzlePieces) {
-            if (piece) {
-                const newIndex = getIndexFromCoords(
-                    piece.outsidePosition.x + gridPadding.x,
-                    piece.outsidePosition.y + gridPadding.y,
-                    gridDims.rows,
-                    gridDims.cols
-                );
-                newGamePieces[newIndex] = {
-                    ...piece,
-                    position: null,
-                };
-            }
-        }
-
-        setPuzzlePieces(newGamePieces);
-        setStarted(false);
-
-        clearGameProgress(gameId ?? ANIME_IMAGES[0].gameId);
-    }, [puzzlePieces, gridPadding, gridDims, gameId]);
 
     return (
         <>

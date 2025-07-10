@@ -57,6 +57,7 @@ type GameContextType = {
     gridPadding: { x: number; y: number };
     gridDims: { cols: number; rows: number };
     isGameComplete: boolean;
+    handleRestartGame: () => void;
 };
 
 export const GameContext = createContext<GameContextType | undefined>(
