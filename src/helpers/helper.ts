@@ -178,8 +178,8 @@ export function getPlaceholderCount(puzzleItemsNumber: number) {
     return dim - 2;
 }
 
-export function loadGameProgress(id: string) {
-    const savedData = localStorage.getItem(`puzzle-${id}`);
+export function loadGameProgress(id: string, puzzleItemsNumber: number) {
+    const savedData = localStorage.getItem(`puzzle-${id}-s${puzzleItemsNumber}`);
     const parsedData = savedData ? JSON.parse(savedData) : null;
 
     return parsedData as Record<string, number | {x: number; y: number} | {x: number; y: number}[]> | null;
@@ -189,7 +189,8 @@ export function saveGameProgress(
     id: string,
     pieces: (PuzzlePiece | null)[],
     placeholders: PuzzlePlaceholder[],
-    playTime: number
+    puzzleItemsNumber: number,
+    playTime: number,
 ) {
     const dataToSave: Record<string, any> = {};
     for (const piece of pieces) {
@@ -212,16 +213,18 @@ export function saveGameProgress(
 
     if (Object.keys(dataToSave).length > 0) {
         dataToSave.playTime = playTime;
-        localStorage.setItem(`puzzle-${id}`, JSON.stringify(dataToSave));
+        localStorage.setItem(`puzzle-${id}-s${puzzleItemsNumber}`, JSON.stringify(dataToSave));
     }
 }
 
-export function markGameComplete(id: string) {
+export function markGameComplete(id: string, puzzleItemsNumber: number) {
     const date = new Date().toISOString();
-    localStorage.setItem(`puzzle-${id}-complete`, date);
-    localStorage.removeItem(`puzzle-${id}`);
+    const completeData = JSON.parse(localStorage.getItem(`puzzle-${id}-complete`) || "{}");
+    completeData[puzzleItemsNumber] = date;
+    localStorage.setItem(`puzzle-${id}-complete`, JSON.stringify(completeData));
+    clearGameProgress(id, puzzleItemsNumber);
 }
 
-export function clearGameProgress(id: string) {
-    localStorage.removeItem(`puzzle-${id}`);
+export function clearGameProgress(id: string, puzzleItemsNumber: number) {
+    localStorage.removeItem(`puzzle-${id}-s${puzzleItemsNumber}`);
 }

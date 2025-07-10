@@ -16,7 +16,7 @@ const CongratsAnimation = ({ itemSize }: CongratsAnimationProps) => {
     const isAnimating = useRef(false);
     const animationId = useRef(0);
     const levelUpSound = useRef<HTMLAudioElement | null>(null);
-    const { isGameComplete, gridDims, settings } = useGame();
+    const { isGameComplete, gridDims, settings, puzzleItemsNumber } = useGame();
 
     // Initialize particles
     const initParticles = useCallback(() => {
@@ -71,7 +71,7 @@ const CongratsAnimation = ({ itemSize }: CongratsAnimationProps) => {
             }
 
             if(gameId) {
-                markGameComplete(gameId);
+                markGameComplete(gameId, puzzleItemsNumber);
             }
         } else {
             isAnimating.current = false;

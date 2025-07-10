@@ -23,12 +23,16 @@ const Gallery = () => {
                 window.innerHeight - 80
             );
 
-            const completeAt = new Date(localStorage.getItem(`puzzle-${item.gameId}-complete`) || "");
+            const completeData = JSON.parse(localStorage.getItem(`puzzle-${item.gameId}-complete`) || "{}")
+            const dates = Object.values(completeData).map(date => new Date(String(date)));
+            const maxDate = Math.max(...dates.map(d => d.getTime()));
+
+            console.log("Complete Data:", maxDate);
             const now = new Date();
             const threeMonthsAgo = new Date(now);
             threeMonthsAgo.setMonth(now.getMonth() - 3);
 
-            const isComplete = completeAt > threeMonthsAgo;
+            const isComplete = maxDate > 0 && new Date(maxDate) > threeMonthsAgo;
 
             return {
                 id: item.gameId,

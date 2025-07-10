@@ -361,7 +361,8 @@ const GameScreen = () => {
                     gameId,
                     newPieces,
                     settings.showHints ? placeholders : [],
-                    playTime
+                    puzzleItemsNumber,
+                    playTime,
                 );
             }
         },
@@ -375,6 +376,7 @@ const GameScreen = () => {
             settings.showHints,
             gameId,
             playTime,
+            puzzleItemsNumber,
         ]
     );
 
@@ -434,7 +436,7 @@ const GameScreen = () => {
                 return;
             }
 
-            const loadedProgress = gameId ? loadGameProgress(gameId) : null;
+            const loadedProgress = gameId ? loadGameProgress(gameId, puzzleItemsNumber) : null;
             if (loadedProgress) {
                 setPlayTime(Number(loadedProgress.playTime));
                 setIsPaused(true);

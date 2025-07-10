@@ -126,6 +126,13 @@ const Game = () => {
         };
     }, [handleVisibilityChange, handleKeyDown]);
 
+    useEffect(() => {
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.body.style.removeProperty("overflow");
+        };
+    }, []);
+
     return (
         <GameContext.Provider
             value={{

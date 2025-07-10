@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { HashRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Routes } from "react-router";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import "./index.css";
@@ -28,13 +28,13 @@ i18n.use(initReactI18next).init({
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
-        <HashRouter>
+        <BrowserRouter>
             <Routes>
                 <Route path="/" element={<App />}>
                     <Route index element={<Gallery />} />
                     <Route path="game/:gameId" element={<Game />} />
                 </Route>
             </Routes>
-        </HashRouter>
+        </BrowserRouter>
     </StrictMode>
 );

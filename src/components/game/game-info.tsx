@@ -80,7 +80,7 @@ const GameInfo = () => {
         <div className="flex items-center text-[#072083] dark:text-[#FFD6C1] w-[200px] transition-colors duration-300">
             {settings.showTimer && (
                 <button
-                    className="text-md w-[90px] cursor-pointer flex flex-row items-center gap-2"
+                    className="text-md w-[110px] cursor-pointer flex flex-row items-center gap-2"
                     aria-label={t("Play time")}
                     onClick={togglePause}
                 >
