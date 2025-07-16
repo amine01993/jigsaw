@@ -149,12 +149,13 @@ const Game = () => {
 
     useEffect(() => {
         if (openSettings || openPuzzleItemsOptions || openHelp) {
-            document.body.style.overflow = "hidden";
             setOpenMobileMenu(false);
-        } else {
-            document.body.style.removeProperty("overflow");
         }
     }, [openSettings, openPuzzleItemsOptions, openHelp]);
+
+    useEffect(() => {
+        setOpenMobileMenu(false);
+    }, [gameId]);
 
     useEffect(() => {
         document.addEventListener("visibilitychange", handleVisibilityChange);
